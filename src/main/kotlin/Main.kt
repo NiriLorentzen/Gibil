@@ -1,16 +1,33 @@
 package org.example
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-fun main() {
-    val name = "Kotlin"
-    //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-    // to see how IntelliJ IDEA suggests fixing it.
-    println("Hello, " + name + "!")
+import com.sun.net.httpserver.Request
+import okhttp3.*
+import java.io.IOException
 
-    for (i in 1..5) {
-        //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-        // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-        println("i = $i")
-    }
+
+
+fun main() {
+    val client = OkHttpClient()
+
+    val request = Request.Builder()
+        .url("https://jsonplaceholder.typicode.com/posts/1")
+        .build()
+
+    client.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            println("Request failed: ${e.message}")
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            response.use {
+                if (response.isSuccessful) {
+                    println("Response: ${response.body?.string()}")
+                } else {
+                    println("Error: ${response.code}")
+                }
+            }
+        }
+    })
+
+    Thread.sleep(3000) // Wait for async response
 }
