@@ -8,13 +8,20 @@ import okhttp3.Callback
 import okhttp3.Call
 import okhttp3.Response
 
+fun urlBuilder(airportCode: String): String {
+    val baseurl = "https://asrv.avinor.no/XmlFeed/v1.0"
+    val airport = "?airport=" + airportCode
+
+    val url = baseurl + airport
+    return url;
+}
 
 
 fun main() {
     val client = OkHttpClient()
 
     val request = Request.Builder()
-        .url("https://asrv.avinor.no/XmlFeed/v1.0?TimeFrom=1&TimeTo=7&airport=OSL&direction=D&lastUpdate=2024-08-08T09:30:00Z")
+        .url(urlBuilder("OSL"))
         .build()
 
     client.newCall(request).enqueue(object : Callback {
