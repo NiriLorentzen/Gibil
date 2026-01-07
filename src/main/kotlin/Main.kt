@@ -7,8 +7,14 @@ import okhttp3.Request
 import okhttp3.Callback
 import okhttp3.Call
 import okhttp3.Response
+import java.util.Date
 
-fun urlBuilder(airportCode: String, timeFrom: String = "0", timeTo: String = "1", direction: String = ""): String {
+
+//imports date-handling, dosent work for now for some mysterious reasons, i gave up:D
+//import kotlinx.datetime.LocalDate
+//import kotlinx.datetime.format.*
+
+fun urlBuilder(airportCodeParam: String, timeFromParam: String = "0", timeToParam: String = "1", directionParam: String = "", lastUpdateParam: String = "2024-08-08T09:30:00Z", serviceTypeParam: String = ""): String {
     /*
      Makes a complete url for the api to use based on the avinor api.
      Obligatory parameters: airport code, example: OSL
@@ -21,18 +27,28 @@ fun urlBuilder(airportCode: String, timeFrom: String = "0", timeTo: String = "1"
         serviceType, option to differentiate based on flight type, such as helicopter(E), regular flights(J), charter flights(C)
     */
     val baseurl = "https://asrv.avinor.no/XmlFeed/v1.0"
-    val airport = "?airport=" + airportCode
-    val time = "&TimeFrom=" + timeFrom + "&TimeTo=" + timeTo
+    val airport = "?airport=" + airportCodeParam
+    val time = "&TimeFrom=" + timeFromParam + "&TimeTo=" + timeToParam
 
     //formats direction-information if a valid direction is specified, else sets it to be nothing
-    val directionFinal = if (direction != "" && (direction == "D" || direction == "A")) {
-        "&Direction=" + direction
+    val serviceType = if (serviceTypeParam != "" && (serviceTypeParam == "E" || serviceTypeParam == "J" || serviceTypeParam == "C")) {
+        "&serviceType=" + serviceTypeParam
+    } else {
+        ""
+    }
+
+    //formats last update parameter
+    val lastUpdate = "&lastUpdate=" + lastUpdateParam
+
+    //formats direction-information if a valid direction is specified, else sets it to be nothing
+    val direction = if (directionParam != "" && (directionParam == "D" || directionParam == "A")) {
+        "&Direction=" + directionParam
     } else {
         ""
     }
 
 
-    val url = baseurl + airport + time + directionFinal
+    val url = baseurl + airport + time + direction + lastUpdate
     return url;
 }
 
@@ -40,8 +56,15 @@ fun urlBuilder(airportCode: String, timeFrom: String = "0", timeTo: String = "1"
 fun main() {
     val client = OkHttpClient()
 
+    val exampleQueryAPI = urlBuilder(
+        airportCodeParam="OSL",
+        directionParam="A",
+        lastUpdateParam = "2026-01-01T09:30:00Z",
+        serviceTypeParam="E"
+    )
+
     val request = Request.Builder()
-        .url(urlBuilder("OSL", direction="A"))
+        .url(exampleQueryAPI)
         .build()
 
     client.newCall(request).enqueue(object : Callback {
