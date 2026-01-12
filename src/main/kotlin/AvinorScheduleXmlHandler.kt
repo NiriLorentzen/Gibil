@@ -33,7 +33,7 @@ class AvinorScheduleXmlHandler {
                 marshaller.marshal(airport, writer)
                 writer.toString()
             }
-        } catch (e: IOException) {
+        } catch (e: Exception) {
             throw RuntimeException("Error marshalling airport", e)
         }
     }

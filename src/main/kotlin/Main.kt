@@ -8,9 +8,7 @@ import okhttp3.Callback
 import okhttp3.Call
 import okhttp3.Response
 import org.example.netex.Airport
-import java.io.InputStream
 import java.io.StringReader
-import java.util.Date
 
 
 //imports date-handling, doesn't work for now for some mysterious reasons, i gave up:D
@@ -52,7 +50,7 @@ fun urlBuilder(airportCodeParam: String, timeFromParam: String = "0", timeToPara
 
 
     val url = baseurl + airport + time + direction + lastUpdate
-    return url;
+    return url
 }
 
 fun parseAndPrintFlights(xmlData: String) {
