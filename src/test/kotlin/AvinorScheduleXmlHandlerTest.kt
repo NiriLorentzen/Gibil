@@ -1,5 +1,6 @@
 package org.example
 
+import org.example.netex.Airport
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
@@ -64,6 +65,16 @@ class AvinorScheduleXmlHandlerTest {
         assertTrue(exception.message?.contains("Error parsing Airport") == true)
     }
 
+    @Test
+    fun `marshall should convert Airport object to XML string`() {
+
+        val airport = Airport("OSL")
+        val xml = handler.marshall(airport)
+
+        assertNotNull(xml)
+        assertTrue(xml.contains("<?xml"))
+        assertTrue(xml.contains("airport"))
+    }
 
 
 }
