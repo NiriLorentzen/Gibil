@@ -1,13 +1,13 @@
 package org.example
 
-import okhttp3.Call
-import okhttp3.Callback
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.Response
-import java.io.IOException
 
-class avinorApiHandling(){
+import java.time.Instant
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+
+class AvinorApiHandling(){
     val client = OkHttpClient()
     var urlBuilderLink = ""
 
@@ -16,7 +16,7 @@ class avinorApiHandling(){
         timeFromParam: Int? = 2,
         timeToParam: Int? = 7,
         directionParam: String? = null,
-        lastUpdateParam: String? = null,
+        lastUpdateParam: Instant? = null,
         serviceTypeParam: String? = null
     ): String? {
         /*
@@ -44,7 +44,7 @@ class avinorApiHandling(){
                    timeFromParam: Int? = 1,
                    timeToParam: Int? = 7,
                    directionParam: String?,
-                   lastUpdateParam: String? = "2024-08-08T09:30:00Z",
+                   lastUpdateParam: Instant? = null,
                    serviceTypeParam: String? = null): String {
         /*
          Makes a complete url for the api to use based on the avinor api.
@@ -101,16 +101,15 @@ class avinorApiHandling(){
         }
 
         //formats last update parameter
-        /*todo: date handling
-        //Accepted format: yyyy-MM-ddTHH:mm:ssZ
-        if (Dateobject is set){
-            //set format correctly
-            val lastUpdate =
-            url += "&lastUpdate" + lastUpdate
+            //Accepted format: yyyy-MM-ddTHH:mm:ssZ
+        if (lastUpdateParam != null) {
+            //set format correctly - ISO-8601
+            val lastUpdate = lastUpdateParam.toString()
+            urlBuilderLink += "&lastUpdate" + lastUpdate
         } else {
             //do nothing
         }
-         */
+
         val lastUpdate = "&lastUpdate=" + lastUpdateParam
 
         //formats direction-information if a valid direction is specified, else sets it to be nothing
