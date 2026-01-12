@@ -53,13 +53,11 @@ fun urlBuilder(airportCodeParam: String, timeFromParam: String = "0", timeToPara
     return url
 }
 
-fun parseAndPrintFlights(xmlData: String) {
-    val context = JAXBContext.newInstance(Airport::class.java)
-    val unmarshaller = context.createUnmarshaller()
+
+
+fun parseAndPrintFlights(airportData: Airport) {
 
     try {
-        val airportData: Airport = unmarshaller.unmarshal(StringReader(xmlData)) as Airport
-
         println("Flyplass: ${airportData.name}")
         println("Sist oppdatert: ${airportData.flightsContainer?.lastUpdate ?: "N/A"}")
 
@@ -74,6 +72,7 @@ fun parseAndPrintFlights(xmlData: String) {
 
 
 fun main() {
+    var AVXH = AvinorScheduleXmlHandler()
 
     val client = OkHttpClient()
 
@@ -100,7 +99,7 @@ fun main() {
              if (response.isSuccessful) {
                  val xmlResponse = response.body?.string()
                  if(xmlResponse != null) {
-                    parseAndPrintFlights(xmlResponse)
+                     parseAndPrintFlights(AVXH.unmarshall(xmlResponse))
                  }
              } else {
                  println("Error: ${response.code}")
@@ -110,4 +109,5 @@ fun main() {
     })
 
     Thread.sleep(3000) // Wait for async response */
+
 }
