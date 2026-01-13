@@ -76,5 +76,14 @@ class AvinorScheduleXmlHandlerTest {
         assertTrue(xml.contains("airport"))
     }
 
+    @Test
+    fun `marshall should produce formatted XML output`() {
+
+        val airport = Airport("OSL")
+        val xml = handler.marshall(airport)
+
+        assertTrue(xml.contains("\n"))
+    }
+
 
 }
