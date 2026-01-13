@@ -14,7 +14,7 @@ class Siri {
     lateinit var version: String
 
     @XmlElement(name = "ServiceDelivery")
-    var serviceDelivery: ServiceDelivery? = null
+    var serviceDelivery: List<ServiceDelivery> = emptyList()
 
     constructor()
 }

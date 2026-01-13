@@ -11,7 +11,7 @@ class EstimatedJourneyVersionFrame {
     var recordedAtTime: String? = null
 
     @XmlElement(name = "EstimatedVehicleJourney")
-    var estimatedVehicleJourney: EstimatedVehicleJourney? = null //PROBS SHOULD BE LIST
+    var estimatedVehicleJourney: List<EstimatedVehicleJourney> = emptyList()
 
     constructor()
 }

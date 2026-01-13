@@ -15,7 +15,7 @@ class EstimatedTimetableDelivery {
     var responseTimestap: String? = null
 
     @XmlElement(name = "EstimatedJourneyVersionFrame")
-    var estimatedJourneyVersionFrame: EstimatedJourneyVersionFrame? = null // SHOULD BE LIST PROBS
+    var estimatedJourneyVersionFrame: List<EstimatedJourneyVersionFrame> = emptyList()
 
     constructor()
 }

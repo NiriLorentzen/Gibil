@@ -14,7 +14,7 @@ class ServiceDelivery {
     var producerRef: String? = null
 
     @XmlElement(name = "EstimatedTimetableDelivery")
-    var estimatedTimetableDelivery: EstimatedTimetableDelivery? = null//SHOULD PROBABLY BE LIST
+    var estimatedTimetableDelivery: List<EstimatedTimetableDelivery> = emptyList()
 
     constructor()
 }

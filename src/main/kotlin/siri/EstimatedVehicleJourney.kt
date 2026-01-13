@@ -17,7 +17,7 @@ class EstimatedVehicleJourney {
     var directionRef: String? = null //SHOUMD MBY BE INT ??
 
     @XmlElement(name = "FramedVehicleJourneyRef")
-    var framedVehicleJourneyRef: FramedVehicleJourneyRef? = null //PROBS SHOULD BE LIST
+    var framedVehicleJourneyRef: List<FramedVehicleJourneyRef> = emptyList()
 
     constructor()
 }
