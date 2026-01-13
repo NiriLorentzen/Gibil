@@ -8,7 +8,7 @@ class AvinorApiHandlingTest {
     @Test
     fun apiCallTest() {
         val api = AvinorApiHandling()
-        val result = api.apiCall(
+        val result = api.avinorXmlFeedApiCall(
             airportCodeParam = "OSL"
         )
         requireNotNull(result) {"api call returned null"}
