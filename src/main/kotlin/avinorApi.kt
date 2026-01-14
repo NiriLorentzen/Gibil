@@ -172,11 +172,23 @@ class AvinorApiHandling(){
     }
 
     public fun userCorrectDate(Datetime: String): String{
-        val datetimeOriginal = Instant.parse(Datetime)
-        val datetimeUserCorrect = datetimeOriginal.atZone(ZoneId.systemDefault())
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        val displayTime = datetimeUserCorrect.format(formatter)
+        /*
+        Takes an incoming instant datetime string, parses it, and then converts it into the correct utc for the user
+         */
+        try {
+            //makes string into time object
+            val datetimeOriginal = Instant.parse(Datetime)
 
-        return displayTime
+            //finds user's local timezone and applies to original datetime
+            val datetimeUserCorrect = datetimeOriginal.atZone(ZoneId.systemDefault())
+
+            //formats for output
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+            val displayTime = datetimeUserCorrect.format(formatter)
+
+            return displayTime
+        } catch (e: Exception) {
+            return "Error: Date format invalid; ${e.localizedMessage}"
+        }
     }
 }
