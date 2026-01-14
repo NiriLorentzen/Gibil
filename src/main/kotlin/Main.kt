@@ -38,7 +38,7 @@ fun main() {
 
     val xmlData = avinorApi.avinorXmlFeedApiCall(chosenAirport, directionParam = "D", lastUpdateParam = Instant.now())
     if (xmlData != null && "Error" !in xmlData) {
-        parseAndPrintFlights(AVXH.unmarshall(xmlData))
+        parseAndPrintFlights(AVXH.unmarshallAirportToXml(xmlData))
     } else {
         println("Failed to fetch XML data: ($xmlData)")
     }
