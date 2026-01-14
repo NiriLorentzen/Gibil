@@ -11,10 +11,10 @@ fun parseAndPrintFlights(airportData: Airport) {
 
     try {
         println("Flyplass: ${airportData.name}")
-        val AvinorApiHandling = AvinorApiHandling()
+        val avinorApiHandling = AvinorApiHandling()
         if (airportData.flightsContainer?.lastUpdate != null){
             val lastUpdate : String = airportData.flightsContainer?.lastUpdate !! //forces not null
-            val userCorrectDate = AvinorApiHandling.userCorrectDate(lastUpdate)
+            val userCorrectDate = avinorApiHandling.userCorrectDate(lastUpdate)
             println("Sist oppdatert: $userCorrectDate")
         }
 
