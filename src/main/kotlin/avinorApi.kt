@@ -17,13 +17,14 @@ class AvinorApiHandling(){
         timeToParam: Int? = 7,
         directionParam: String? = null,
         lastUpdateParam: Instant? = null,
-        serviceTypeParam: String? = null
+        serviceTypeParam: String? = null,
+        codeshareParam: Boolean? = null
     ): String? {
         /*
         Handles the apicall to the avinor api, urlBuilder creates the url that is then used by the http3 package to fetch xml dataa from the api, it returns the raw xml as a string or an error message
          */
 
-        val url = urlBuilder(airportCodeParam, timeFromParam, timeToParam, directionParam, lastUpdateParam, serviceTypeParam)
+        val url = urlBuilder(airportCodeParam, timeFromParam, timeToParam, directionParam, lastUpdateParam, serviceTypeParam, codeshareParam)
 
         //if the response from the urlBuilder isn't an error-message
         if ("Error" !in url){
@@ -56,7 +57,8 @@ class AvinorApiHandling(){
                    timeToParam: Int? = 7,
                    directionParam: String?,
                    lastUpdateParam: Instant? = null,
-                   serviceTypeParam: String? = null): String {
+                   serviceTypeParam: String? = null,
+                   codeshareParam: Boolean? = null ): String {
         /*
          Makes a complete url for the api to use based on the avinor api.
          Obligatory parameters: airport code, example: OSL
@@ -129,6 +131,13 @@ class AvinorApiHandling(){
         } else if(directionParam != null) {
             throw IllegalArgumentException("Direction parameter invalid, input ignored")
             //println("Direction parameter invalid, input ignored")
+        } else {
+            //do nothing, not obligatory parameter for api
+        }
+
+        //adds the optional codeshare information
+        if (codeshareParam != null && codeshareParam) {
+            urlBuilderLink += "&codeshare=Y"
         } else {
             //do nothing, not obligatory parameter for api
         }
