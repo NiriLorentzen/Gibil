@@ -11,11 +11,12 @@ class EstimatedTimetableDelivery {
     @XmlAttribute(name = "version")
     var version: String? = null
 
-    @XmlElement(name = "ResponseTimestamp")
+    @XmlElement(name = "ResponseTimestamp", namespace = "http://www.siri.org.uk/siri")
     var responseTimestap: String? = null
 
-    @XmlElement(name = "EstimatedJourneyVersionFrame")
-    var estimatedJourneyVersionFrame: List<EstimatedJourneyVersionFrame> = emptyList()
+    @XmlElement(name = "EstimatedJourneyVersionFrame", namespace = "http://www.siri.org.uk/siri")
+    var estimatedJourneyVersionFrame: List<EstimatedJourneyVersionFrame> = mutableListOf()
+
 
     constructor()
 }

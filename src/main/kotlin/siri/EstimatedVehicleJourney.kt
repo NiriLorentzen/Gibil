@@ -7,17 +7,18 @@ import jakarta.xml.bind.annotation.XmlElement
 @XmlAccessorType(XmlAccessType.FIELD)
 class EstimatedVehicleJourney {
 
-    @XmlElement(name = "RecordedAtTime")
+    @XmlElement(name = "RecordedAtTime", namespace = "http://www.siri.org.uk/siri")
     var recordedAtTime: String? = null
 
-    @XmlElement(name = "LineRef")
+    @XmlElement(name = "LineRef", namespace = "http://www.siri.org.uk/siri")
     var lineRef: String? = null
 
-    @XmlElement(name = "DirectionRef")
+    @XmlElement(name = "DirectionRef", namespace = "http://www.siri.org.uk/siri")
     var directionRef: String? = null //SHOUMD MBY BE INT ??
 
-    @XmlElement(name = "FramedVehicleJourneyRef")
-    var framedVehicleJourneyRef: List<FramedVehicleJourneyRef> = emptyList()
+    @XmlElement(name = "FramedVehicleJourneyRef", namespace = "http://www.siri.org.uk/siri")
+    var framedVehicleJourneyRef: List<FramedVehicleJourneyRef> = mutableListOf()
+
 
     constructor()
 }

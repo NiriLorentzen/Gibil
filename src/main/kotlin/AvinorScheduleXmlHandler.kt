@@ -3,15 +3,14 @@ package org.example
 import jakarta.xml.bind.JAXBContext
 import jakarta.xml.bind.Marshaller
 import org.example.netex.Airport
-import java.io.IOException
 import java.io.StringReader
 import java.io.StringWriter
 
 class AvinorScheduleXmlHandler {
 
-    companion object {
+   companion object {
         private val context: JAXBContext = JAXBContext.newInstance(Airport::class.java)
-    }
+   }
 
     fun unmarshall(xmlData: String): Airport {
         try {
