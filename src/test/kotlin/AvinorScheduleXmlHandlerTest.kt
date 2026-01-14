@@ -17,7 +17,7 @@ class AvinorScheduleXmlHandlerTest {
     }
 
     @Test
-    fun `unmarshall should parse valid XML into Airport object`() {
+    fun `unmarshallAirportToXml should parse valid XML into Airport object`() {
         val validXml = """
         <airport name="OSL">
             <flights lastUpdate="2026-01-07T09:24:27.016611Z">
@@ -37,39 +37,39 @@ class AvinorScheduleXmlHandlerTest {
         </airport>
         """.trimIndent()
 
-        val airport = handler.unmarshall(validXml)
+        val airport = handler.unmarshallAirportToXml(validXml)
         assertNotNull(airport)
     }
 
     @Test
-    fun `unmarshall should throw exception for invalid XML`() {
+    fun `unmarshallAirportToXml should throw exception for invalid XML`() {
         val invalidXml = """
         <airport name="OSL">
                 <>
         """.trimIndent()
 
         val exception = assertThrows<RuntimeException> {
-            handler.unmarshall(invalidXml)
+            handler.unmarshallAirportToXml(invalidXml)
         }
 
         assertTrue(exception.message?.contains("Error parsing Airport") == true)
     }
 
     @Test
-    fun `unmarshall should throw exception for empty string`() {
+    fun `unmarshallAirportToXml should throw exception for empty string`() {
         val invalidXml = ""
 
         val exception = assertThrows<RuntimeException> {
-            handler.unmarshall(invalidXml)
+            handler.unmarshallAirportToXml(invalidXml)
         }
         assertTrue(exception.message?.contains("Error parsing Airport") == true)
     }
 
     @Test
-    fun `marshall should convert Airport object to XML string`() {
+    fun `marshallAirport should convert Airport object to XML string`() {
 
         val airport = Airport("OSL")
-        val xml = handler.marshall(airport)
+        val xml = handler.marshallAirport(airport)
 
         assertNotNull(xml)
         assertTrue(xml.contains("<?xml"))
@@ -77,10 +77,10 @@ class AvinorScheduleXmlHandlerTest {
     }
 
     @Test
-    fun `marshall should produce formatted XML output`() {
+    fun `marshallAirport should produce formatted XML output`() {
 
         val airport = Airport("OSL")
-        val xml = handler.marshall(airport)
+        val xml = handler.marshallAirport(airport)
 
         assertTrue(xml.contains("\n"))
     }
