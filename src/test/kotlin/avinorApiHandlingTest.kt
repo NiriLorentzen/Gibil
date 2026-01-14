@@ -112,11 +112,19 @@ class AvinorApiHandlingTest {
     }
 
     @Test
-    fun datetimeConversionGoodTest(){
+    fun userCorrectDateConversionGoodTest(){
         val datetime = "2024-08-08T09:30:00Z"
         val result = api.userCorrectDate(datetime)
         println(result)
         assertTrue(result.contains("2024-08-08 11:30:00"))
 
+    }
+
+    @Test
+    fun userCorrectDateConversionBadTest(){
+        val datetime = "not a valid date format"
+        val result = api.userCorrectDate(datetime)
+        println(result)
+        assertTrue(result.contains("Error: Date format invalid;"))
     }
 }
