@@ -27,7 +27,6 @@ class AvinorApiHandling(){
 
         //if the response from the urlBuilder isn't an error-message
         if ("Error" !in url){
-            println(url)
             return apiCall(url)
         } else {
             return "Error with avinor-XmlFeed api-call"
@@ -36,7 +35,6 @@ class AvinorApiHandling(){
     }
 
     private fun apiCall(url: String): String? {
-        println(url)
         val request = Request.Builder()
             .url(url)
             .build()
@@ -75,10 +73,11 @@ class AvinorApiHandling(){
         urlBuilderLink = baseurl
 
         if (airportCodeCheckApi(airportCodeParam)) {
-            val airport = "?airport=" + airportCodeParam
+            val airport = "?airport=" + airportCodeParam.uppercase()
             urlBuilderLink += airport
         } else {
-            return "Error: Airportcode not valid! XmlFeed api-call not made!"
+            throw IllegalArgumentException("Error: Airportcode not valid! XmlFeed api-call not made!")
+            //return "Error: Airportcode not valid! XmlFeed api-call not made!"
         }
 
         //timeFromParam handling, minimum value is 1 and max is 36
@@ -86,7 +85,8 @@ class AvinorApiHandling(){
             val timeFrom = "&TimeFrom=" + timeFromParam
             urlBuilderLink += timeFrom
         } else if (timeFromParam != null) {
-            println("TimeFrom parameter is outside of valid index, can only be between 1 and 36 hours, timeFrom set to default")
+            throw IllegalArgumentException("TimeFrom parameter is outside of valid index, can only be between 1 and 36 hours, timeFrom set to default")
+            //println("TimeFrom parameter is outside of valid index, can only be between 1 and 36 hours, timeFrom set to default")
         } else {
             //do nothing, not obligatory parameter for api
         }
@@ -96,16 +96,18 @@ class AvinorApiHandling(){
             val timeFrom = "&TimeTo=" + timeToParam
             urlBuilderLink += timeFrom
         } else if (timeToParam != null) {
-            println("TimeTo parameter is outside of valid index, can only be between 7 and 336 hours, timeTo set to default")
+            throw IllegalArgumentException("TimeTo parameter is outside of valid index, can only be between 7 and 336 hours, timeTo set to default")
+            //println("TimeTo parameter is outside of valid index, can only be between 7 and 336 hours, timeTo set to default")
         } else {
             //do nothing, not obligatory parameter for api
         }
 
         //adds the optional "E" service type if the option is specified
-        if (serviceTypeParam != null && (serviceTypeParam == "E")) {
+        if (serviceTypeParam != null && (serviceTypeParam.uppercase() == "E")) {
             urlBuilderLink += "&serviceType=" + serviceTypeParam
         } else if (serviceTypeParam != null) {
-            println("Servicetype not valid, input ignored")
+            throw IllegalArgumentException("Servicetype not valid, input ignored")
+            //println("Servicetype not valid, input ignored")
         } else {
             //do nothing, not obligatory parameter for api
         }
@@ -120,18 +122,16 @@ class AvinorApiHandling(){
             //do nothing, not obligatory parameter for api
         }
 
-        val lastUpdate = "&lastUpdate=" + lastUpdateParam
-
         //formats direction-information if a valid direction is specified, else sets it to be nothing
-        if (directionParam != null && (directionParam == "D" || directionParam == "A")) {
+        if (directionParam != null && (directionParam.uppercase() == "D" || directionParam.uppercase() == "A")) {
             val direction = "&Direction=" + directionParam
             urlBuilderLink += direction
         } else if(directionParam != null) {
-            println("Direction parameter invalid, input ignored")
+            throw IllegalArgumentException("Direction parameter invalid, input ignored")
+            //println("Direction parameter invalid, input ignored")
         } else {
             //do nothing, not obligatory parameter for api
         }
-
 
         return urlBuilderLink
     }
@@ -145,18 +145,15 @@ class AvinorApiHandling(){
             </airportNames>
          */
 
-        val url = "https://asrv.avinor.no/airportNames/v1.0?airport=" + airportCodeParam
+        val url = "https://asrv.avinor.no/airportNames/v1.0?airport=" + airportCodeParam.uppercase()
 
-        println(url)
         //calls the api
         val response = apiCall(url)
-        println(response)
 
         //a snippet of what's expected in the api-response
-            //
         val expectedInResponse = "code=\"${airportCodeParam.uppercase()}\""
 
-        //if there's a respose, the airportcode was found by the api, and the airportcodeparameter is 3
+        //if there's a respose, the airportcode was found by the api, and the airportcodeparameter is 3 characters
         if (response != null && airportCodeParam.length == 3 && expectedInResponse in response){
             return true
         } else {
@@ -165,5 +162,4 @@ class AvinorApiHandling(){
 
 
     }
-
 }
