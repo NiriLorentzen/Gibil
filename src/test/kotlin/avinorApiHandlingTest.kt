@@ -110,4 +110,13 @@ class AvinorApiHandlingTest {
             )
         }
     }
+
+    @Test
+    fun datetimeConversionGoodTest(){
+        val datetime = "2024-08-08T09:30:00Z"
+        val result = api.userCorrectDate(datetime)
+        println(result)
+        assertTrue(result.contains("2024-08-08 11:30:00"))
+
+    }
 }
