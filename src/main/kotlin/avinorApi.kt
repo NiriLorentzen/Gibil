@@ -4,6 +4,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 import java.time.Instant
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
@@ -168,7 +169,14 @@ class AvinorApiHandling(){
         } else {
             return false
         }
+    }
 
+    public fun userCorrectDate(Datetime: String): String{
+        val datetimeOriginal = Instant.parse(Datetime)
+        val datetimeUserCorrect = datetimeOriginal.atZone(ZoneId.systemDefault())
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        val displayTime = datetimeUserCorrect.format(formatter)
 
+        return displayTime
     }
 }
