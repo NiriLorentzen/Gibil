@@ -1,7 +1,7 @@
 package org.example
 
 import java.time.Instant
-import org.example.netex.Airport
+import avinor.model.Airport
 
 //Temporary function to test JAXB objects fetched and made from Avinor api data
 fun parseAndPrintFlights(airportData: Airport) {

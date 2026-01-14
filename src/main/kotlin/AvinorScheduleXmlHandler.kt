@@ -2,7 +2,7 @@ package org.example
 
 import jakarta.xml.bind.JAXBContext
 import jakarta.xml.bind.Marshaller
-import org.example.netex.Airport
+import avinor.model.Airport
 import java.io.IOException
 import java.io.StringReader
 import java.io.StringWriter

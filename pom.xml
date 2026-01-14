@@ -95,6 +95,11 @@
             <artifactId>jaxb-runtime</artifactId>
             <version>4.0.6</version>
         </dependency>
+        <dependency>
+            <groupId>org.entur</groupId>
+            <artifactId>siri-java-model</artifactId>
+            <version>1.28</version>
+        </dependency>
     </dependencies>
 
 </project>
