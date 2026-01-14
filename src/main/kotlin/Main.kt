@@ -34,9 +34,10 @@ fun main() {
         serviceTypeParam = "E",
         timeToParam = 336,
         timeFromParam = 24,
+        codeshareParam = true
     )
 
-    val xmlData = avinorApi.avinorXmlFeedApiCall(chosenAirport, directionParam = "D", lastUpdateParam = Instant.now())
+    val xmlData = avinorApi.avinorXmlFeedApiCall(chosenAirport, directionParam = "D", lastUpdateParam = Instant.now(), codeshareParam = true)
     if (xmlData != null && "Error" !in xmlData) {
         parseAndPrintFlights(AVXH.unmarshall(xmlData))
     } else {
