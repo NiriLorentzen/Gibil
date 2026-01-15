@@ -2,11 +2,11 @@ package siri
 
 import avinor.model.Airport
 import avinor.model.Flight
-import org.entur.siri.adapter.ZonedDateTimeAdapter
 import uk.org.siri.siri21.*
 import java.math.BigInteger
 import java.time.ZonedDateTime
-
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
 
 class SiriETMapper {
@@ -46,7 +46,7 @@ class SiriETMapper {
 
         // create EstimatedJourneyVersionFrame element
         val estimatedVersionFrame = EstimatedVersionFrameStructure()
-        estimatedVersionFrame.recordedAtTime = ZonedDateTimeAdapter.parse(airport.flightsContainer?.lastUpdate) ?: ZonedDateTime.now()
+        estimatedVersionFrame.recordedAtTime = parseTimestamp(airport.flightsContainer?.lastUpdate) ?: ZonedDateTime.now()
 
         // Map each flight to EstimatedVehicleJourney
         airport.flightsContainer?.flight?.forEach { flight ->
@@ -64,7 +64,7 @@ class SiriETMapper {
         // Skip flights without a flightId
         if (flight.flightId == null) return null
         val airline = flight.airline ?: return null
-        val scheduleTime = ZonedDateTimeAdapter.parse(flight.scheduleTime) ?: return null
+        val scheduleTime = parseTimestamp(flight.scheduleTime) ?: return null
 
         val estimatedVehicleJourney = EstimatedVehicleJourney()
 
@@ -79,11 +79,11 @@ class SiriETMapper {
         directionRef.value = if (flight.isDeparture()) "outbound" else "inbound"
         estimatedVehicleJourney.directionRef = directionRef
 
-        //Set FramedVehicleJourneyRef
+        // Set FramedVehicleJourneyRef
         val framedVehicleJourneyRef = FramedVehicleJourneyRefStructure()
         val dataFrameRef = DataFrameRefStructure()
         dataFrameRef.value = scheduleTime.toLocalDate().toString()
-        framedVehicleJourneyRef.dataFrameRef
+        framedVehicleJourneyRef.dataFrameRef = dataFrameRef
         //TODO! find out proper vehicleJourneyRef content (for now just use prefix + uniqueID)
         framedVehicleJourneyRef.datedVehicleJourneyRef = VEHICLE_JOURNEY_PREFIX + flight.uniqueID
         estimatedVehicleJourney.framedVehicleJourneyRef = framedVehicleJourneyRef
@@ -102,7 +102,7 @@ class SiriETMapper {
     }
     private fun addEstimatedCalls(estimatedVehicleJourney: EstimatedVehicleJourney, flight: Flight
     , requestingAirportCode: String, scheduleTime: ZonedDateTime) {
-        val statusTime = ZonedDateTimeAdapter.parse(flight.status?.time)
+        val statusTime = parseTimestamp(flight.status?.time)
 
 
         var estimatedCallsWrapper = estimatedVehicleJourney.getEstimatedCalls()
@@ -114,10 +114,8 @@ class SiriETMapper {
         val calls = estimatedCallsWrapper.getEstimatedCalls()
 
         if (flight.isDeparture()) {
-            val call = createDepartureCall(
-                requestingAirportCode, scheduleTime,
-                flight.status?.code, statusTime
-            )
+            val call = createDepartureCall(requestingAirportCode, scheduleTime,
+                flight.status?.code, statusTime)
             calls.add(call)
 
             val destAirport = flight.airport
@@ -150,7 +148,7 @@ class SiriETMapper {
         }
     }
     private fun createDepartureCall(airportCode: String, scheduleTime: ZonedDateTime,
-                                    statusCode: String?, statusTime: ZonedDateTime): EstimatedCall {
+                                    statusCode: String?, statusTime: ZonedDateTime?): EstimatedCall {
         val call = EstimatedCall()
 
         val stopPointRef = StopPointRefStructure()
@@ -215,7 +213,22 @@ class SiriETMapper {
                 call.arrivalStatus = CallStatusEnumeration.ON_TIME
             }
         }
-
         return call
+    }
+    private fun parseTimestamp(timestamp: String?): ZonedDateTime? {
+        if (timestamp.isNullOrBlank()) return null
+
+        return try {
+            ZonedDateTime.parse(timestamp, DateTimeFormatter.ISO_DATE_TIME)
+        } catch (_: DateTimeParseException) {
+            try {
+                // Try parsing without timezone (assume UTC)
+                java.time.LocalDateTime.parse(timestamp, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                    .atZone(java.time.ZoneOffset.UTC)
+            } catch (_: DateTimeParseException) {
+                println("Warning: Could not parse timestamp: $timestamp")
+                null
+            }
+        }
     }
 }
