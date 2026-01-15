@@ -10,7 +10,6 @@ import java.time.format.DateTimeFormatter
 
 class AvinorApiHandling(){
     val client = OkHttpClient()
-    var urlBuilderLink = ""
 
     public fun avinorXmlFeedApiCall(
         airportCodeParam: String,
@@ -73,7 +72,7 @@ class AvinorApiHandling(){
         */
         val baseurl = "https://asrv.avinor.no/XmlFeed/v1.0"
 
-        urlBuilderLink = baseurl
+        var urlBuilderLink = baseurl
 
         if (airportCodeCheckApi(airportCodeParam)) {
             val airport = "?airport=" + airportCodeParam.uppercase()
@@ -120,7 +119,7 @@ class AvinorApiHandling(){
         if (lastUpdateParam != null) {
             //set format correctly - ISO-8601
             val lastUpdate = lastUpdateParam.toString()
-            urlBuilderLink += "&lastUpdate" + lastUpdate
+            urlBuilderLink += "&lastUpdate=" + lastUpdate
         } else {
             //do nothing, not obligatory parameter for api
         }
