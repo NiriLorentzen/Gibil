@@ -13,7 +13,7 @@ class AvinorScheduleXmlHandler {
         private val context: JAXBContext = JAXBContext.newInstance(Airport::class.java)
     }
 
-    fun unmarshall(xmlData: String): Airport {
+    fun unmarshallXmlToAirport(xmlData: String): Airport {
         try {
             val unmarshaller = context.createUnmarshaller()
             return unmarshaller.unmarshal(StringReader(xmlData)) as Airport
@@ -23,7 +23,7 @@ class AvinorScheduleXmlHandler {
         }
     }
 
-    fun marshall(airport: Airport): String {
+    fun marshallAirport(airport: Airport): String {
         try {
             val marshaller = context.createMarshaller().apply {
                 setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)

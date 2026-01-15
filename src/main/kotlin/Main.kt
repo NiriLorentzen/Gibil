@@ -12,7 +12,12 @@ fun parseAndPrintFlights(airportData: Airport) {
 
     try {
         println("Flyplass: ${airportData.name}")
-        println("Sist oppdatert: ${airportData.flightsContainer?.lastUpdate ?: "N/A"}")
+        val avinorApiHandler = AvinorApiHandler()
+        if (airportData.flightsContainer?.lastUpdate != null){
+            val lastUpdate : String = airportData.flightsContainer?.lastUpdate !! //forces not null
+            val userCorrectDate = avinorApiHandler.userCorrectDate(lastUpdate)
+            println("Sist oppdatert: $userCorrectDate")
+        }
 
         airportData.flightsContainer?.flight?.forEach { flight ->
             println("Fly: ${flight.flightId} to/from ${flight.airport} - Status: ${flight.status?.code ?: "N/A"}")
@@ -28,7 +33,7 @@ fun main() {
 
     println("Please choose a airport")
     val chosenAirport = readln()
-    val avinorApi = AvinorApiHandling()
+    val avinorApi = AvinorApiHandler()
     val specificTime = Instant.parse("2024-08-08T09:30:00Z")
 
     val exampleQueryAPI = avinorApi.avinorXmlFeedApiCall(
@@ -38,11 +43,12 @@ fun main() {
         serviceTypeParam = "E",
         timeToParam = 336,
         timeFromParam = 24,
+        codeshareParam = true
     )
-
-    val xmlData = avinorApi.avinorXmlFeedApiCall(chosenAirport, directionParam = "D", lastUpdateParam = Instant.now())
+    val clock = Clock.systemUTC();
+    val xmlData = avinorApi.avinorXmlFeedApiCall(chosenAirport, directionParam = "D", lastUpdateParam = Instant.now(clock), codeshareParam = true)
     if (xmlData != null && "Error" !in xmlData) {
-        parseAndPrintFlights(AVXH.unmarshall(xmlData))
+        parseAndPrintFlights(AVXH.unmarshallXmlToAirport(xmlData))
     } else {
         println("Failed to fetch XML data: ($xmlData)")
     }

@@ -4,10 +4,16 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 import java.time.Instant
-import java.time.ZonedDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-class AvinorApiHandling(){
+const val TIMEFROMPARAM_MIN_NUM = 1
+const val TIMEFROMPARAM_MAX_NUM = 36
+
+const val TIMETOPARAM_MIN_NUM = 7
+const val TIMETOPARAM_MAX_NUM = 336
+
+class AvinorApiHandler(){
     val client = OkHttpClient()
     var urlBuilderLink = ""
 
@@ -17,13 +23,14 @@ class AvinorApiHandling(){
         timeToParam: Int? = 7,
         directionParam: String? = null,
         lastUpdateParam: Instant? = null,
-        serviceTypeParam: String? = null
+        serviceTypeParam: String? = null,
+        codeshareParam: Boolean? = null
     ): String? {
         /*
         Handles the apicall to the avinor api, urlBuilder creates the url that is then used by the http3 package to fetch xml dataa from the api, it returns the raw xml as a string or an error message
          */
 
-        val url = urlBuilder(airportCodeParam, timeFromParam, timeToParam, directionParam, lastUpdateParam, serviceTypeParam)
+        val url = urlBuilder(airportCodeParam, timeFromParam, timeToParam, directionParam, lastUpdateParam, serviceTypeParam, codeshareParam)
 
         //if the response from the urlBuilder isn't an error-message
         if ("Error" !in url){
@@ -56,7 +63,8 @@ class AvinorApiHandling(){
                    timeToParam: Int? = 7,
                    directionParam: String?,
                    lastUpdateParam: Instant? = null,
-                   serviceTypeParam: String? = null): String {
+                   serviceTypeParam: String? = null,
+                   codeshareParam: Boolean? = null ): String {
         /*
          Makes a complete url for the api to use based on the avinor api.
          Obligatory parameters: airport code, example: OSL
@@ -81,7 +89,7 @@ class AvinorApiHandling(){
         }
 
         //timeFromParam handling, minimum value is 1 and max is 36
-        if (timeFromParam != null && timeFromParam <= 36 && timeFromParam >= 1) {
+        if (timeFromParam != null && timeFromParam <= TIMEFROMPARAM_MAX_NUM && timeFromParam >= TIMEFROMPARAM_MIN_NUM) {
             val timeFrom = "&TimeFrom=" + timeFromParam
             urlBuilderLink += timeFrom
         } else if (timeFromParam != null) {
@@ -92,7 +100,7 @@ class AvinorApiHandling(){
         }
 
         //timeToParam handling, minimum: 7 maximum 336
-        if (timeToParam != null && timeToParam <= 336 && timeToParam >= 7) {
+        if (timeToParam != null && timeToParam <= TIMETOPARAM_MAX_NUM && timeToParam >= TIMETOPARAM_MIN_NUM) {
             val timeFrom = "&TimeTo=" + timeToParam
             urlBuilderLink += timeFrom
         } else if (timeToParam != null) {
@@ -133,6 +141,13 @@ class AvinorApiHandling(){
             //do nothing, not obligatory parameter for api
         }
 
+        //adds the optional codeshare information
+        if (codeshareParam != null && codeshareParam) {
+            urlBuilderLink += "&codeshare=Y"
+        } else {
+            //do nothing, not obligatory parameter for api
+        }
+
         return urlBuilderLink
     }
 
@@ -159,7 +174,26 @@ class AvinorApiHandling(){
         } else {
             return false
         }
+    }
 
+    public fun userCorrectDate(Datetime: String): String{
+        /*
+        Takes an incoming instant datetime string, parses it, and then converts it into the correct utc for the user
+         */
+        try {
+            //makes string into time object
+            val datetimeOriginal = Instant.parse(Datetime)
 
+            //finds user's local timezone and applies to original datetime
+            val datetimeUserCorrect = datetimeOriginal.atZone(ZoneId.systemDefault())
+
+            //formats for output
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+            val displayTime = datetimeUserCorrect.format(formatter)
+
+            return displayTime
+        } catch (e: Exception) {
+            return "Error: Date format invalid; ${e.localizedMessage}"
+        }
     }
 }
