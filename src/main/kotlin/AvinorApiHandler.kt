@@ -7,9 +7,17 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
+const val TIMEFROMPARAM_MIN_NUM = 1
+const val TIMEFROMPARAM_MAX_NUM = 36
+
+const val TIMETOPARAM_MIN_NUM = 7
+const val TIMETOPARAM_MAX_NUM = 336
+
 class AvinorApiHandler(){
     val client = OkHttpClient()
     var urlBuilderLink = ""
+
+
 
     public fun avinorXmlFeedApiCall(
         airportCodeParam: String,
@@ -83,7 +91,7 @@ class AvinorApiHandler(){
         }
 
         //timeFromParam handling, minimum value is 1 and max is 36
-        if (timeFromParam != null && timeFromParam <= 36 && timeFromParam >= 1) {
+        if (timeFromParam != null && timeFromParam <= TIMEFROMPARAM_MAX_NUM && timeFromParam >= TIMEFROMPARAM_MIN_NUM) {
             val timeFrom = "&TimeFrom=" + timeFromParam
             urlBuilderLink += timeFrom
         } else if (timeFromParam != null) {
@@ -94,7 +102,7 @@ class AvinorApiHandler(){
         }
 
         //timeToParam handling, minimum: 7 maximum 336
-        if (timeToParam != null && timeToParam <= 336 && timeToParam >= 7) {
+        if (timeToParam != null && timeToParam <= TIMETOPARAM_MAX_NUM && timeToParam >= TIMETOPARAM_MIN_NUM) {
             val timeFrom = "&TimeTo=" + timeToParam
             urlBuilderLink += timeFrom
         } else if (timeToParam != null) {
