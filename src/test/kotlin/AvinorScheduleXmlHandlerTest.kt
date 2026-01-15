@@ -1,6 +1,6 @@
 package org.example
 
-import org.example.netex.Airport
+import model.avinorApi.Airport
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
