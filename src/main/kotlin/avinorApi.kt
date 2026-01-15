@@ -8,10 +8,10 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
-class AvinorApiHandling(){
+open class AvinorApiHandling(){
     val client = OkHttpClient()
 
-    public fun avinorXmlFeedApiCall(
+    open fun avinorXmlFeedApiCall(
         airportCodeParam: String,
         timeFromParam: Int? = 2,
         timeToParam: Int? = 7,
