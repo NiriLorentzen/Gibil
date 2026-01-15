@@ -62,9 +62,7 @@ class AvinorApiHandlerTest {
 
     @Test
     fun `avinorXmlFeedApiCall with negative time from throws exception`(){
-        /*
-        A test where the aiport-code is not a valid airport code
-         */
+
         assertThrows(IllegalArgumentException::class.java) {
             val result = api.avinorXmlFeedApiCall(
                 airportCodeParam = "OS",
@@ -79,9 +77,7 @@ class AvinorApiHandlerTest {
 
     @Test
     fun `avinorXmlFeedApiCall with time exceeding limit throw exception`() {
-        /*
-        A test where the aiport-code is not a valid airport code
-         */
+
         assertThrows(IllegalArgumentException::class.java) {
             val result = api.avinorXmlFeedApiCall(
                 airportCodeParam = "OS",
@@ -96,9 +92,7 @@ class AvinorApiHandlerTest {
 
     @Test
     fun `avinorXmlFeedApiCall with invalid service type throws exception`() {
-        /*
-        A test where the aiport-code is not a valid airport code
-         */
+
         assertThrows(IllegalArgumentException::class.java) {
             val result = api.avinorXmlFeedApiCall(
                 airportCodeParam = "OS",
