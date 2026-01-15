@@ -15,10 +15,10 @@ class AirlineNameHandler(private val cacheFile: String = "airlines.json") {
         if (result != null) {
             return result
         }
-        return "Error"
+        return "Error: No response from airlinenames api"
     }
 
-    fun update() {
+    public fun update() {
         val xmlData = fetchAirlineXml()
 
         airlines.clear()
@@ -34,9 +34,15 @@ class AirlineNameHandler(private val cacheFile: String = "airlines.json") {
         saveCache()
     }
 
-    fun getName(code: String): String? = airlines[code]
+    public fun getName(code: String): String?{
+        if(airlines[code] != null){
+            return airlines[code]
+        } else {
+            return "Airlinename not found"
+        }
+    }
 
-    fun isValid(code: String): Boolean = airlines.containsKey(code)
+    public fun isValid(code: String): Boolean = airlines.containsKey(code)
 
     private fun saveCache() {
         val json = airlines.entries.joinToString(",\n  ", "{\n  ", "\n}") {
