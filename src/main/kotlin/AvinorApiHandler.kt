@@ -17,8 +17,6 @@ class AvinorApiHandler(){
     val client = OkHttpClient()
     var urlBuilderLink = ""
 
-
-
     public fun avinorXmlFeedApiCall(
         airportCodeParam: String,
         timeFromParam: Int? = 2,
