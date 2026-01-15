@@ -1,9 +1,10 @@
-package org.example.siri
+package siri
 
 import avinor.model.Airport
 import avinor.model.Flight
 import org.entur.siri.adapter.ZonedDateTimeAdapter
 import uk.org.siri.siri21.*
+import java.math.BigInteger
 import java.time.ZonedDateTime
 
 
@@ -25,7 +26,7 @@ class SiriETMapper {
         val siri = Siri()
 
         val serviceDelivery = ServiceDelivery()
-        serviceDelivery.responseTimestamp = java.time.ZonedDateTime.now()
+        serviceDelivery.responseTimestamp = ZonedDateTime.now()
 
         val producerRef = RequestorRef()
         producerRef.value = PRODUCER_REF
@@ -41,7 +42,7 @@ class SiriETMapper {
         airport: Airport, requestingAirportCode: String): EstimatedTimetableDeliveryStructure {
         val delivery = EstimatedTimetableDeliveryStructure()
         delivery.version = "2.1"
-        delivery.responseTimestamp = java.time.ZonedDateTime.now()
+        delivery.responseTimestamp = ZonedDateTime.now()
 
         // create EstimatedJourneyVersionFrame element
         val estimatedVersionFrame = EstimatedVersionFrameStructure()
@@ -96,7 +97,125 @@ class SiriETMapper {
         operatorRef.value = "$OPERATOR_PREFIX$airline"
         estimatedVehicleJourney.operatorRef = operatorRef
 
+        addEstimatedCalls(estimatedVehicleJourney, flight, requestingAirportCode, scheduleTime)
         return estimatedVehicleJourney
     }
+    private fun addEstimatedCalls(estimatedVehicleJourney: EstimatedVehicleJourney, flight: Flight
+    , requestingAirportCode: String, scheduleTime: ZonedDateTime) {
+        val statusTime = ZonedDateTimeAdapter.parse(flight.status?.time)
 
+
+        var estimatedCallsWrapper = estimatedVehicleJourney.getEstimatedCalls()
+        if (estimatedCallsWrapper == null) {
+            estimatedCallsWrapper = EstimatedVehicleJourney.EstimatedCalls()
+            estimatedVehicleJourney.setEstimatedCalls(estimatedCallsWrapper)
+        }
+
+        val calls = estimatedCallsWrapper.getEstimatedCalls()
+
+        if (flight.isDeparture()) {
+            val call = createDepartureCall(
+                requestingAirportCode, scheduleTime,
+                flight.status?.code, statusTime
+            )
+            calls.add(call)
+
+            val destAirport = flight.airport
+            if (destAirport != null) {
+                val destCall = EstimatedCall()
+                val destStopRef = StopPointRefStructure()
+                //TODO! find out proper stopPointRef content (for now just use prefix + dest airport code)
+                destStopRef.value = "$STOP_PREFIX$destAirport"
+                destCall.stopPointRef = destStopRef
+                destCall.order = BigInteger.valueOf(2)
+                calls.add(destCall)
+            }
+        }
+        else {
+            val originAirport = flight.airport
+            if (originAirport != null) {
+                val originCall = EstimatedCall()
+                val originStopRef = StopPointRefStructure()
+                originStopRef.value = "$STOP_PREFIX$originAirport"
+                originCall.stopPointRef = originStopRef
+                originCall.order = BigInteger.ONE
+                calls.add(originCall)
+            }
+
+            val destCall = createArrivalCall(requestingAirportCode, scheduleTime,
+                flight.status?.code, statusTime,
+                if (originAirport != null) BigInteger.valueOf(2) else BigInteger.ONE
+            )
+            calls.add(destCall)
+        }
+    }
+    private fun createDepartureCall(airportCode: String, scheduleTime: ZonedDateTime,
+                                    statusCode: String?, statusTime: ZonedDateTime): EstimatedCall {
+        val call = EstimatedCall()
+
+        val stopPointRef = StopPointRefStructure()
+        stopPointRef.value = "$STOP_PREFIX$airportCode"
+        call.stopPointRef = stopPointRef
+
+        call.order = BigInteger.ONE
+        call.aimedDepartureTime = scheduleTime
+
+        when (statusCode) {
+            "D" -> {
+                call.expectedDepartureTime = statusTime ?: scheduleTime
+                call.departureStatus = CallStatusEnumeration.DEPARTED
+            }
+            "E" -> {
+                call.expectedDepartureTime = statusTime ?: scheduleTime
+                call.departureStatus = CallStatusEnumeration.DELAYED
+            }
+            "C" -> {
+                call.departureStatus = CallStatusEnumeration.CANCELLED
+                call.setCancellation(true)
+            }
+            else -> {
+                call.expectedDepartureTime = scheduleTime
+                call.departureStatus = CallStatusEnumeration.ON_TIME
+            }
+        }
+        return call
+    }
+    private fun createArrivalCall(
+        airportCode: String,
+        scheduleTime: ZonedDateTime,
+        statusCode: String?,
+        statusTime: ZonedDateTime?,
+        //TODO! Find out if bigInteger is necessary here
+        order: BigInteger
+    ): EstimatedCall {
+        val call = EstimatedCall()
+
+        val stopPointRef = StopPointRefStructure()
+        stopPointRef.value = "$STOP_PREFIX$airportCode"
+        call.stopPointRef = stopPointRef
+
+        call.order = order
+        call.aimedArrivalTime = scheduleTime
+
+        when (statusCode) {
+            "A" -> {
+                call.expectedArrivalTime = statusTime ?: scheduleTime
+                call.arrivalStatus = CallStatusEnumeration.ARRIVED
+            }
+            "E" -> {
+                call.expectedArrivalTime = statusTime ?: scheduleTime
+                call.arrivalStatus = CallStatusEnumeration.DELAYED
+            }
+            "C" -> {
+                call.arrivalStatus = CallStatusEnumeration.CANCELLED
+                call.setCancellation(true)
+            }
+            else -> {
+                call.expectedArrivalTime = scheduleTime
+                call.arrivalStatus = CallStatusEnumeration.ON_TIME
+            }
+        }
+
+        return call
+    }
 }
