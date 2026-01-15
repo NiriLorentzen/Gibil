@@ -4,23 +4,6 @@ import org.example.netex.Airport
 import kotlinx.coroutines.*
 import kotlin.system.measureTimeMillis
 
-/*
-//Temporary function to test JAXB objects fetched and made from Avinor api data
-fun parseAndPrintFlights(airportData: Airport) {
-
-    try {
-        println("Airport: ${airportData.name}")
-        println("Last updated: ${airportData.flightsContainer?.lastUpdate ?: "N/A"}")
-
-        airportData.flightsContainer?.flight?.forEach { flight ->
-            println("Flight: ${flight.flightId} to/from ${flight.airport} - Status: ${flight.status?.code ?: "N/A"}")
-        }
-    } catch (e: Exception) {
-        println("Something went wrong while parsing: ${e.message}")
-        e.printStackTrace()
-    }
-}
-*/
 
 fun parseAndPrintFlights(airportData: Airport) {
     try {
@@ -33,24 +16,20 @@ fun parseAndPrintFlights(airportData: Airport) {
 
         airportData.flightsContainer?.flight?.forEach { flight ->
 
-            // 1. Determine if it is Departure (To) or Arrival (From)
             val direction = if (flight.arrDep == "A") "From(A)" else "To(D)"
 
-            // 2. Make timestamps readable (we clip out the time HH:mm from the date string)
-            // Example string: "2026-01-15T08:48:50..." -> We take characters 11 to 16 to get "08:48"
+
             val scheduledTime = flight.scheduleTime?.substring(11, 16) ?: "??"
             val newTime = flight.status?.time?.substring(11, 16)
 
-            // 3. Translate status code to understandable English
             val statusText = when(flight.status?.code) {
                 "A" -> "Arrival ($newTime)"
                 "D" -> "Departure ($newTime)"
-                "E" -> "New Time: $newTime"  // The time appears here!
+                "E" -> "New Time: $newTime"
                 "C" -> "Cancelled"
-                else -> "" // No status often means it is on schedule
+                else -> ""
             }
 
-            // 4. Print it out in nice columns
             println("%-10s %-5s %-15s %-10s %-20s".format(
                 flight.flightId,
                 direction,
@@ -110,31 +89,3 @@ fun main() = runBlocking {
 
         println("Total time: $timeUsed ms")
 }
-
-
-/*
-    var AVXH = AvinorScheduleXmlHandler()
-
-    println("Please choose a airport")
-    val chosenAirport = readln()
-    val avinorApi = AvinorApiHandling()
-    val specificTime = Instant.parse("2024-08-08T09:30:00Z")
-
-    val exampleQueryAPI = avinorApi.avinorXmlFeedApiCall(
-        airportCodeParam = chosenAirport,
-        directionParam = "A",
-        lastUpdateParam = specificTime,
-        serviceTypeParam = "E",
-        timeToParam = 336,
-        timeFromParam = 24,
-    )
-
-    val xmlData = avinorApi.avinorXmlFeedApiCall(chosenAirport, directionParam = "D", lastUpdateParam = Instant.now())
-    if (xmlData != null && "Error" !in xmlData) {
-        parseAndPrintFlights(AVXH.unmarshall(xmlData))
-    } else {
-        println("Failed to fetch XML data: ($xmlData)")
-    }
-
-    Thread.sleep(3000) // Wait for async response
-*/
