@@ -4,11 +4,11 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
 import java.time.Instant
 
-class AvinorApiHandlingTest {
-    val api = AvinorApiHandling()
+class AvinorApiHandlerTest {
+    val api = AvinorApiHandler()
 
     @Test
-    fun apiCallTest() {
+    fun `avinorXmlFeedApiCall with all valid parameters returns XML with airport data`() {
         /*
         A test where every parameter is set and is valid
          */
@@ -27,7 +27,7 @@ class AvinorApiHandlingTest {
     }
 
     @Test
-    fun apiCallBadAirportCodeTest(){
+    fun `avinorXmlFeedApiCall with invalid airport code throws exception`() {
         /*
         A test where the aiport-code is not a valid airport code
          */
@@ -44,7 +44,7 @@ class AvinorApiHandlingTest {
     }
 
     @Test
-    fun apiCallBadDirectionCodeTest(){
+    fun `avinorXmlFeedApiCall with invalid direction throws exception`() {
         /*
         A test where the aiport-code is not a valid airport code
          */
@@ -61,7 +61,7 @@ class AvinorApiHandlingTest {
     }
 
     @Test
-    fun apiCallBadTimeFromCodeTest(){
+    fun `avinorXmlFeedApiCall with negative time from throws exception`(){
         /*
         A test where the aiport-code is not a valid airport code
          */
@@ -78,7 +78,7 @@ class AvinorApiHandlingTest {
     }
 
     @Test
-    fun apiCallBadTimeToTest(){
+    fun `avinorXmlFeedApiCall with time exceeding limit throw exception`() {
         /*
         A test where the aiport-code is not a valid airport code
          */
@@ -95,7 +95,7 @@ class AvinorApiHandlingTest {
     }
 
     @Test
-    fun apiCallBadServiceTypeTest(){
+    fun `avinorXmlFeedApiCall with invalid service type throws exception`() {
         /*
         A test where the aiport-code is not a valid airport code
          */
@@ -103,7 +103,7 @@ class AvinorApiHandlingTest {
             val result = api.avinorXmlFeedApiCall(
                 airportCodeParam = "OS",
                 timeFromParam = 1,
-                timeToParam = 700000000,
+                timeToParam = 7,
                 directionParam = "D",
                 lastUpdateParam = Instant.parse("2024-08-08T09:30:00Z"),
                 serviceTypeParam = "aisdnaisdnaidn"
@@ -112,7 +112,7 @@ class AvinorApiHandlingTest {
     }
 
     @Test
-    fun userCorrectDateConversionGoodTest(){
+    fun `userCorrectDate with valid iso timestamp returns localized date string`(){
         val datetime = "2024-08-08T09:30:00Z"
         val result = api.userCorrectDate(datetime)
         println(result)
@@ -121,7 +121,7 @@ class AvinorApiHandlingTest {
     }
 
     @Test
-    fun userCorrectDateConversionBadTest(){
+    fun `userCorrectDate with invalid date format returns error`(){
         val datetime = "not a valid date format"
         val result = api.userCorrectDate(datetime)
         println(result)

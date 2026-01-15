@@ -9,10 +9,10 @@ fun parseAndPrintFlights(airportData: Airport) {
 
     try {
         println("Flyplass: ${airportData.name}")
-        val avinorApiHandling = AvinorApiHandling()
+        val avinorApiHandler = AvinorApiHandler()
         if (airportData.flightsContainer?.lastUpdate != null){
             val lastUpdate : String = airportData.flightsContainer?.lastUpdate !! //forces not null
-            val userCorrectDate = avinorApiHandling.userCorrectDate(lastUpdate)
+            val userCorrectDate = avinorApiHandler.userCorrectDate(lastUpdate)
             println("Sist oppdatert: $userCorrectDate")
         }
 
@@ -30,7 +30,7 @@ fun main() {
 
     println("Please choose a airport")
     val chosenAirport = readln()
-    val avinorApi = AvinorApiHandling()
+    val avinorApi = AvinorApiHandler()
     val specificTime = Instant.parse("2024-08-08T09:30:00Z")
 
     val exampleQueryAPI = avinorApi.avinorXmlFeedApiCall(

@@ -5,10 +5,9 @@ import okhttp3.Request
 
 import java.time.Instant
 import java.time.ZoneId
-import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
-class AvinorApiHandling(){
+class AvinorApiHandler(){
     val client = OkHttpClient()
     var urlBuilderLink = ""
 
