@@ -1,10 +1,10 @@
-package avinor.model
+package model.avinorApi
 
 import jakarta.xml.bind.annotation.XmlAccessType
 import jakarta.xml.bind.annotation.XmlAccessorType
 import jakarta.xml.bind.annotation.XmlAttribute
 import jakarta.xml.bind.annotation.XmlElement
-import avinor.model.FlightStatus
+import model.avinorApi.FlightStatus
 
 @XmlAccessorType(XmlAccessType.FIELD)
 class Flight {

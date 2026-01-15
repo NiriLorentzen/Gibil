@@ -1,7 +1,7 @@
 package org.example
 
 import java.time.Instant
-import avinor.model.Airport
+import model.avinorApi.Airport
 import java.io.File
 import siri.SiriETMapper
 import siri.SiriETPublisher

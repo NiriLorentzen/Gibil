@@ -1,11 +1,11 @@
-package avinor.model
+package model.avinorApi
 
 import jakarta.xml.bind.annotation.XmlAccessType
 import jakarta.xml.bind.annotation.XmlAccessorType
 import jakarta.xml.bind.annotation.XmlAttribute
 import jakarta.xml.bind.annotation.XmlElement
 import jakarta.xml.bind.annotation.XmlRootElement
-import avinor.model.FlightsContainer
+import model.avinorApi.FlightsContainer
 
 @XmlRootElement(name = "airport")
 @XmlAccessorType(XmlAccessType.FIELD)

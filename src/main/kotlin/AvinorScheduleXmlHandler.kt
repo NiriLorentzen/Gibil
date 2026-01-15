@@ -2,7 +2,7 @@ package org.example
 
 import jakarta.xml.bind.JAXBContext
 import jakarta.xml.bind.Marshaller
-import avinor.model.Airport
+import model.avinorApi.Airport
 import java.io.IOException
 import java.io.StringReader
 import java.io.StringWriter

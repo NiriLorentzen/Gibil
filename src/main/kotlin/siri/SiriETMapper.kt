@@ -1,7 +1,7 @@
 package siri
 
-import avinor.model.Airport
-import avinor.model.Flight
+import model.avinorApi.Airport
+import model.avinorApi.Flight
 import uk.org.siri.siri21.*
 import java.math.BigInteger
 import java.time.ZonedDateTime
