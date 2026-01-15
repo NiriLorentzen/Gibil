@@ -95,6 +95,11 @@
             <artifactId>jaxb-runtime</artifactId>
             <version>4.0.6</version>
         </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-coroutines-core</artifactId>
+            <version>1.7.3</version>
+        </dependency>
     </dependencies>
 
 </project>
