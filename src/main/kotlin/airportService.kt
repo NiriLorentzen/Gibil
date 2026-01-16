@@ -1,6 +1,6 @@
 package org.example
 
-import model.avinorApi.flight
+import model.avinorApi.Airport
 import kotlinx.coroutines.*
 import kotlin.system.measureTimeMillis
 import java.io.File
@@ -9,7 +9,7 @@ import java.io.File
  * Service class to handle fetching and processing airport data from the Avinor API.
  */
 class AirportService(
-    private val api: AvinorApiHandling = AvinorApiHandling(),
+    private val api: AvinorApiHandler = AvinorApiHandler(),
     private val xmlHandler: AvinorScheduleXmlHandler = AvinorScheduleXmlHandler()
 ) {
 
