@@ -1,7 +1,5 @@
 package siri
 
-import jakarta.xml.bind.JAXBContext
-import jakarta.xml.bind.Marshaller
 import org.example.SharedJaxbContext
 import uk.org.siri.siri21.Siri
 import java.io.StringWriter
