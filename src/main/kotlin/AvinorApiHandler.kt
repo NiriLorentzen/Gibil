@@ -5,11 +5,18 @@ import okhttp3.Request
 
 import java.time.Instant
 import java.time.ZoneId
-import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 open class AvinorApiHandling(){
+const val TIMEFROMPARAM_MIN_NUM = 1
+const val TIMEFROMPARAM_MAX_NUM = 36
+
+const val TIMETOPARAM_MIN_NUM = 7
+const val TIMETOPARAM_MAX_NUM = 336
+
+class AvinorApiHandler(){
     val client = OkHttpClient()
+    var urlBuilderLink = ""
 
     open fun avinorXmlFeedApiCall(
         airportCodeParam: String,
@@ -35,7 +42,7 @@ open class AvinorApiHandling(){
 
     }
 
-    private fun apiCall(url: String): String? {
+    public fun apiCall(url: String): String? {
         val request = Request.Builder()
             .url(url)
             .build()
@@ -72,7 +79,7 @@ open class AvinorApiHandling(){
         */
         val baseurl = "https://asrv.avinor.no/XmlFeed/v1.0"
 
-        var urlBuilderLink = baseurl
+        urlBuilderLink = baseurl
 
         if (airportCodeCheckApi(airportCodeParam)) {
             val airport = "?airport=" + airportCodeParam.uppercase()
@@ -83,7 +90,7 @@ open class AvinorApiHandling(){
         }
 
         //timeFromParam handling, minimum value is 1 and max is 36
-        if (timeFromParam != null && timeFromParam <= 36 && timeFromParam >= 1) {
+        if (timeFromParam != null && timeFromParam <= TIMEFROMPARAM_MAX_NUM && timeFromParam >= TIMEFROMPARAM_MIN_NUM) {
             val timeFrom = "&TimeFrom=" + timeFromParam
             urlBuilderLink += timeFrom
         } else if (timeFromParam != null) {
@@ -94,7 +101,7 @@ open class AvinorApiHandling(){
         }
 
         //timeToParam handling, minimum: 7 maximum 336
-        if (timeToParam != null && timeToParam <= 336 && timeToParam >= 7) {
+        if (timeToParam != null && timeToParam <= TIMETOPARAM_MAX_NUM && timeToParam >= TIMETOPARAM_MIN_NUM) {
             val timeFrom = "&TimeTo=" + timeToParam
             urlBuilderLink += timeFrom
         } else if (timeToParam != null) {

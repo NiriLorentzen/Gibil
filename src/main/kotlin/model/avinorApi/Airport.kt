@@ -1,11 +1,11 @@
-package org.example.netex
+package model.avinorApi
 
 import jakarta.xml.bind.annotation.XmlAccessType
 import jakarta.xml.bind.annotation.XmlAccessorType
 import jakarta.xml.bind.annotation.XmlAttribute
 import jakarta.xml.bind.annotation.XmlElement
 import jakarta.xml.bind.annotation.XmlRootElement
-import org.example.netex.FlightsContainer
+import model.avinorApi.FlightsContainer
 
 @XmlRootElement(name = "airport")
 @XmlAccessorType(XmlAccessType.FIELD)
