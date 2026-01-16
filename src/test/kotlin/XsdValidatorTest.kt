@@ -4,9 +4,22 @@ import org.entur.siri.validator.SiriValidator
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
 
-class XsdValidationTest {
+class XsdValidatorTest {
 
     private val validator = XsdValidator()
+
+    private fun loadResource(path: String): String =
+        this::class.java.getResourceAsStream(path)?.bufferedReader()?.readText()
+            ?: throw IllegalArgumentException("Resource not found: $path")
+
+
+    @Test
+    fun `validate valid SIRI-ET XML for SIRI version 2_0 with external xml file with realistic payload`() {
+        val validXml = loadResource("/siri-example-data.xml")
+
+        val result = validator.validateSirixml(validXml, SiriValidator.Version.VERSION_2_1)
+        assertTrue(result.isValid)
+    }
 
     @Test
     fun `validate valid SIRI-ET XML for SIRI version 2_1`() {
@@ -62,5 +75,6 @@ class XsdValidationTest {
         assertFalse(result.isValid)
     }
 
-
 }
+
+
