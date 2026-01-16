@@ -5,8 +5,14 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
 import java.io.File
 
+/**
+ * Test class for AirportService.
+ */
 class AirportServiceTest {
 
+    /**
+     * A fake implementation of AvinorApiHandling for testing purposes.
+     */
     class FakeAvinorApi : AvinorApiHandling() {
         override fun avinorXmlFeedApiCall(
             airportCodeParam: String,
@@ -33,6 +39,9 @@ class AirportServiceTest {
         }
     }
 
+    /**
+     * Test to verify that fetchAndProcessAirports processes airports without network errors.
+     */
     @Test
     fun `fetchAndProcessAirports should process airports without network errors`() = runBlocking {
         val tempFile = File.createTempFile("test_airports", ".txt")

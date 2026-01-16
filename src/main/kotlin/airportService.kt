@@ -1,16 +1,22 @@
 package org.example
 
-import org.example.netex.Airport //model.avinorApi.flight
+import model.avinorApi.flight
 import kotlinx.coroutines.*
 import kotlin.system.measureTimeMillis
 import java.io.File
 
+/**
+ * Service class to handle fetching and processing airport data from the Avinor API.
+ */
 class AirportService(
     private val api: AvinorApiHandling = AvinorApiHandling(),
     private val xmlHandler: AvinorScheduleXmlHandler = AvinorScheduleXmlHandler()
 ) {
 
-
+    /**
+     * Fetches and processes airport data for a list of airport codes read from a text file.
+     * @param filePath Path to the text file containing airport codes, one per line.
+     */
     fun fetchAndProcessAirports(filePath: String) = runBlocking {
 
         val file = File(filePath)
@@ -32,7 +38,10 @@ class AirportService(
         println("Total operation time: $timeUsed ms")
     }
 
-
+    /**
+     * Processes a batch of airport codes by fetching their data concurrently.
+     * @param batch List of airport codes to process.
+     */
     private suspend fun processBatch(batch: List<String>) = coroutineScope {
         val deferredResults = batch.map { code ->
             async(Dispatchers.IO) {
@@ -53,7 +62,7 @@ class AirportService(
         results.forEach { (code, xmlData) ->
             if (xmlData != null && "Error" !in xmlData) {
                 try {
-                    val airportObject = xmlHandler.unmarshallAirportToXml(xmlData)
+                    val airportObject = xmlHandler.unmarshallXmlToAirport(xmlData)
                     printFlightDetails(airportObject)
                 } catch (e: Exception) {
                     println("Could not parse data for $code: ${e.message}")
@@ -64,7 +73,10 @@ class AirportService(
         }
     }
 
-
+    /**
+     * Prints flight details for a given airport.
+     * @param airportData Airport object containing flight information.
+     */
     private fun printFlightDetails(airportData: Airport) {
         try {
             println("\n--------------------------------------------------")
