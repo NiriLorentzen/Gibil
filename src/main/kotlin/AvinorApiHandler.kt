@@ -28,7 +28,7 @@ class AvinorApiHandler(){
     var serviceType: String? = null
     var codeshare: Boolean? = null
     /**
-     * Handles the apicall to the avinor api, urlBuilder creates the url that is then used by the http3 package to fetch xml dataa from the api, it returns the raw xml as a string or an error message
+     * Handles the apicall to the avinor api, urlBuilder creates the url that is then used by the http3 package to fetch XML dataa from the api, it returns the raw XML as a string or an error message
      *
      * @param airportCodeParam OBLIGATORY code of airport, example; OSL, BGO
      * @param timeFromParam optional amount of hours worth of flight data before last updated time
@@ -41,13 +41,14 @@ class AvinorApiHandler(){
      */
     public fun avinorXmlFeedApiCall(
         airportCodeParam: String,
-        timeFromParam: Int?,
-        timeToParam: Int?,
-        directionParam: String?,
-        lastUpdateParam: Instant?,
-        serviceTypeParam: String?,
-        codeshareParam: Boolean?
+        timeFromParam: Int? = null,
+        timeToParam: Int? = null,
+        directionParam: String? = null,
+        lastUpdateParam: Instant? = null,
+        serviceTypeParam: String? = null,
+        codeshareParam: Boolean? = null
     ): String? {
+        println("asd")
         //sets the fields to be the parameters, if the parameters are set. this is done since theese parameters are optional
         timeFromParam?.let { timeFrom = it }
         timeToParam?.let { timeTo = it }
@@ -108,18 +109,18 @@ class AvinorApiHandler(){
         }
 
         //timeFromParam handling, minimum value is 1 and max is 36
-        if (timeFrom != null && timeFrom <= TIMEFROMPARAM_MAX_NUM && timeFrom >= TIMEFROMPARAM_MIN_NUM) {
+        if (timeFrom <= TIMEFROMPARAM_MAX_NUM && timeFrom >= TIMEFROMPARAM_MIN_NUM) {
             urlBuilderLink += "&TimeFrom=$timeFrom"
-        } else if (timeFrom != null) {
+        } else if (timeFrom != 2) {
             throw IllegalArgumentException("TimeFrom parameter is outside of valid index, can only be between 1 and 36 hours, timeFrom set to default")
         } else {
             //do nothing, not obligatory parameter for api
         }
 
         //timeToParam handling, minimum: 7 maximum 336
-        if (timeTo != null && timeTo <= TIMETOPARAM_MAX_NUM && timeTo >= TIMETOPARAM_MIN_NUM) {
+        if (timeTo <= TIMETOPARAM_MAX_NUM && timeTo >= TIMETOPARAM_MIN_NUM) {
             urlBuilderLink += "&TimeTo=$timeTo"
-        } else if (timeTo != null) {
+        } else if (timeTo != 7) {
             throw IllegalArgumentException("TimeTo parameter is outside of valid index, can only be between 7 and 336 hours, timeTo set to default")
         } else {
             //do nothing, not obligatory parameter for api
@@ -154,8 +155,12 @@ class AvinorApiHandler(){
         }
 
         //adds the optional codeshare information
-        if (codeshare != null && codeshare !!) {
-            urlBuilderLink += "&codeshare=Y"
+        if (codeshare != null) {
+            if (codeshare !!) {
+                urlBuilderLink += "&codeshare=Y"
+            } else{
+                //do nothing
+            }
         } else {
             //do nothing, not obligatory parameter for api
         }
@@ -194,10 +199,10 @@ class AvinorApiHandler(){
      * @param Datetime is a datetime of java.instant format with timezone information
      * @return corrected datetime information, sets the utc to be the same as the user has. Returns errormessage if format is invalid
      */
-    public fun userCorrectDate(Datetime: String): String{
+    public fun userCorrectDate(datetime: String): String{
         try {
             //makes string into time object
-            val datetimeOriginal = Instant.parse(Datetime)
+            val datetimeOriginal = Instant.parse(datetime)
 
             //finds user's local timezone and applies to original datetime
             val datetimeUserCorrect = datetimeOriginal.atZone(ZoneId.systemDefault())
