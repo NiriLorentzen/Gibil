@@ -1,10 +1,10 @@
-package org.example.netex
+package model.avinorApi
 
 import jakarta.xml.bind.annotation.XmlAccessType
 import jakarta.xml.bind.annotation.XmlAccessorType
 import jakarta.xml.bind.annotation.XmlAttribute
 import jakarta.xml.bind.annotation.XmlElement
-import org.example.netex.FlightStatus
+import model.avinorApi.FlightStatus
 
 @XmlAccessorType(XmlAccessType.FIELD)
 class Flight {
@@ -65,4 +65,9 @@ class Flight {
         this.uniqueID = uniqueID
     }
 
+    fun isDeparture(): Boolean = arrDep == "D"
+    fun isArrival(): Boolean = arrDep == "A"
+
+    fun isCancelled(): Boolean = status?.code == "C"
+    fun isDelayed(): Boolean = delayed == "Y"
 }

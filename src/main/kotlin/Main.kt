@@ -2,7 +2,11 @@ package org.example
 
 import AirlineNameHandler
 import java.time.Instant
-import org.example.netex.Airport
+import model.avinorApi.Airport
+import java.io.File
+import siri.SiriETMapper
+import siri.SiriETPublisher
+import org.entur.siri.validator.SiriValidator
 import java.time.Clock
 
 //Temporary function to test JAXB objects fetched and made from Avinor api data
@@ -28,7 +32,7 @@ fun parseAndPrintFlights(airportData: Airport) {
 }
 
 fun main() {
-    var AVXH = AvinorScheduleXmlHandler()
+    val AVXH = AvinorScheduleXmlHandler()
 
     println("Please choose a airport")
     val chosenAirport = readln()
@@ -62,5 +66,32 @@ fun main() {
     println(cache.isValid("BA"))  // true
 
     Thread.sleep(3000) // Wait for async response */
+
+    val airportCode = chosenAirport
+    val airport = AVXH.unmarshallXmlToAirport(xmlData ?: "")
+
+    // Convert to SIRI-ET format
+    println("Converting to SIRI-ET format...")
+    val siriMapper = SiriETMapper()
+    val siriPublisher = SiriETPublisher()
+    val siri = siriMapper.mapToSiri(airport, airportCode)
+
+    // Generate XML output
+    val siriXml = siriPublisher.toXml(siri)
+
+    // Save to file
+    val outputFile = File("siri-et-output.xml")
+    siriPublisher.toFile(siri, outputFile, formatOutput = true)
+    println("SIRI-ET XML saved to: ${outputFile.absolutePath}")
+    println()
+
+    SiriValidator.validate(siriXml, SiriValidator.Version.VERSION_2_1)
+
+    // Print sample of output
+    println("=== SIRI-ET XML Output (first 2000 chars) ===")
+    println(siriXml.take(2000))
+    if (siriXml.length > 2000) {
+        println("... (truncated, see ${outputFile.name} for full output)")
+    }
 
 }
