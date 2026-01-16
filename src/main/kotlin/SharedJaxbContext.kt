@@ -10,7 +10,7 @@ import uk.org.siri.siri21.Siri
  * A shared JAXB context object for the project.
  * If new classes are needed they can be added to the context variable
  */
-object JaxbContext {
+object SharedJaxbContext {
 
    val context: JAXBContext = JAXBContext.newInstance(
        Airport::class.java,
@@ -23,7 +23,7 @@ object JaxbContext {
      * @return Marshaller
      */
     fun createMarshaller(formattedOutput: Boolean = false): Marshaller {
-        return  context.createMarshaller().apply {
+        return context.createMarshaller().apply {
             setProperty(Marshaller.JAXB_ENCODING, "UTF-8")
             if (formattedOutput) {
                 setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
