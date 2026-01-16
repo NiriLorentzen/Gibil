@@ -19,13 +19,13 @@ object SharedJaxbContext {
 
     /**
      * Always encoded to UTF-8
-     * @param formattedOutput boolean. Baseline false, returns compressed string. If set to true returns formatted XML
+     * @param formatOutput boolean. Baseline false, returns compressed string. If set to true returns formatted XML
      * @return Marshaller
      */
-    fun createMarshaller(formattedOutput: Boolean = false): Marshaller {
+    fun createMarshaller(formatOutput: Boolean = false): Marshaller {
         return context.createMarshaller().apply {
             setProperty(Marshaller.JAXB_ENCODING, "UTF-8")
-            if (formattedOutput) {
+            if (formatOutput) {
                 setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
             }
         }
