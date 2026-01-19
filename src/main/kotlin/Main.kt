@@ -1,13 +1,15 @@
 package org.example
 
-import AirlineNameHandler
+import handler.*
 import java.time.Instant
 import model.avinorApi.Airport
+import org.entur.siri.validator.SiriValidator
 import java.io.File
 import siri.SiriETMapper
 import siri.SiriETPublisher
-import org.entur.siri.validator.SiriValidator
 import java.time.Clock
+import siri.validator.XsdValidator
+import routes.api.AvinorApiHandler
 
 //Temporary function to test JAXB objects fetched and made from Avinor api data
 fun parseAndPrintFlights(airportData: Airport) {
@@ -43,7 +45,7 @@ fun main() {
         airportCodeParam = chosenAirport,
         directionParam = "A",
         lastUpdateParam = specificTime,
-        serviceTypeParam = "E",
+        includeHelicopterParam = true,
         timeToParam = 336,
         timeFromParam = 24,
         codeshareParam = true
@@ -59,7 +61,7 @@ fun main() {
     val cache = AirlineNameHandler()
 
     // Update from API once in a while
-    //cache.update()
+        //cache.update()
 
     // Use it
     println(cache.getName("AA"))  // American Airlines
@@ -85,7 +87,9 @@ fun main() {
     println("SIRI-ET XML saved to: ${outputFile.absolutePath}")
     println()
 
-    SiriValidator.validate(siriXml, SiriValidator.Version.VERSION_2_1)
+    // Validate XML against SIRI-ET XSD
+    val result = XsdValidator().validateSirixml(siriXml, SiriValidator.Version.VERSION_2_1)
+    println(result.message)
 
     // Print sample of output
     println("=== SIRI-ET XML Output (first 2000 chars) ===")

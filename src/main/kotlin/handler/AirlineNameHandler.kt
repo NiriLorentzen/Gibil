@@ -1,4 +1,6 @@
-import org.example.AvinorApiHandler
+package handler
+
+import routes.api.AvinorApiHandler
 import java.io.File
 
 /**
@@ -93,4 +95,3 @@ class AirlineNameHandler(private val cacheFile: String = "airlines.json") {
         }
     }
 }
-
