@@ -35,53 +35,37 @@ fun parseAndPrintFlights(airportData: Airport) {
 }
 
 fun main() {
-    val AVXH = AvinorScheduleXmlHandler()
+    val avinorApi = AvinorApiHandler()
+    val avxh = AvinorScheduleXmlHandler()
     val endpoint = Endpoint()
+    val cache = AirlineNameHandler()
+    val siriMapper = SiriETMapper()
+    val siriPublisher = SiriETPublisher()
+    val clock = Clock.systemUTC()
 
     println("Please choose a airport")
     val chosenAirport = readln()
-    val avinorApi = AvinorApiHandler()
-    val specificTime = Instant.parse("2024-08-08T09:30:00Z")
 
-    val exampleQueryAPI = avinorApi.avinorXmlFeedApiCall(
-        airportCodeParam = chosenAirport,
-        directionParam = "A",
-        lastUpdateParam = specificTime,
-        includeHelicopterParam = true,
-        timeToParam = 336,
-        timeFromParam = 24,
-        codeshareParam = true
-    )
-    val clock = Clock.systemUTC();
     val xmlData = avinorApi.avinorXmlFeedApiCall(chosenAirport, directionParam = "D", lastUpdateParam = Instant.now(clock), codeshareParam = true)
     if (xmlData != null && "Error" !in xmlData) {
-        parseAndPrintFlights(AVXH.unmarshallXmlToAirport(xmlData))
+        parseAndPrintFlights(avxh.unmarshallXmlToAirport(xmlData))
     } else {
         println("Failed to fetch XML data: ($xmlData)")
     }
 
-    val cache = AirlineNameHandler()
-
-    // Update from API once in a while
-        //cache.update()
-
-    // Use it
-    println(cache.getName("AA"))  // American Airlines
-    println(cache.isValid("BA"))  // true
-
     Thread.sleep(3000) // Wait for async response */
 
     val airportCode = chosenAirport
-    val airport = AVXH.unmarshallXmlToAirport(xmlData ?: "")
+    val airport = avxh.unmarshallXmlToAirport(xmlData ?: "")
 
     // Convert to SIRI-ET format
     println("Converting to SIRI-ET format...")
-    val siriMapper = SiriETMapper()
-    val siriPublisher = SiriETPublisher()
     val siri = siriMapper.mapToSiri(airport, airportCode)
 
     // Generate XML output
     val siriXml = siriPublisher.toXml(siri)
+
+    // SendsXml to endpoint(localhost 8080)
     endpoint.siriEtEndpoint(siriXml)
 
     // Save to file
