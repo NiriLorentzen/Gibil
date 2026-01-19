@@ -1,7 +1,8 @@
-package org.example
+package routes.api
 
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.time.Clock
 
 import java.time.Instant
 import java.time.ZoneId
@@ -14,19 +15,21 @@ const val TIMEFROMPARAM_MAX_NUM = 36
 const val TIMETOPARAM_MIN_NUM = 7
 const val TIMETOPARAM_MAX_NUM = 336
 
+val clock: Clock = Clock.systemUTC()
+
 /**
  * Is the handler for XMLfeed- and airportcode-Api, and also handles converting java time instant-datetimes into correct timezone for user.
  *
  */
-class AvinorApiHandler(){
+class AvinorApiHandler{
     val client = OkHttpClient()
     var urlBuilderLink = ""
     var timeFrom: Int = 2
     var timeTo: Int = 7
     var direction: String? = null
-    var lastUpdate: Instant? = null
-    var serviceType: String? = null
-    var codeshare: Boolean? = null
+    var lastUpdate: Instant = Instant.now(clock)
+    var includeHelicopter: Boolean = false
+    var codeshare: Boolean = false
     /**
      * Handles the apicall to the avinor api, urlBuilder creates the url that is then used by the http3 package to fetch XML dataa from the api, it returns the raw XML as a string or an error message
      *
@@ -35,26 +38,25 @@ class AvinorApiHandler(){
      * @param timeToParam optional amount of hours worth of flight data after last updated time
      * @param directionParam optional, choose to fetch "A" or "D", or both, A is Arrival flights only, D is Departure flights only, picking no option shows both
      * @param lastUpdateParam optional date of when flight data range is gathered from, standard is now
-     * @param serviceTypeParam optional, choose to add helicopter flight information, only valid option is "E"
+     * @param includeHelicopterParam optional, choose to add helicopter flight information, if its set to true a servicetype="E" is added to the apicall
      * @param codeshareParam optional, choose to add codeshare information or not, consists of: codeshareAirlineDesignators, codeshareAirlineNames, codeshareFlightNumbers and codeshareOperationalSuffixs.
      * @return XML-result from XMLfeed api-call or an errormessage if failure occured
      */
-    public fun avinorXmlFeedApiCall(
+    fun avinorXmlFeedApiCall(
         airportCodeParam: String,
         timeFromParam: Int? = null,
         timeToParam: Int? = null,
         directionParam: String? = null,
         lastUpdateParam: Instant? = null,
-        serviceTypeParam: String? = null,
+        includeHelicopterParam: Boolean? = null,
         codeshareParam: Boolean? = null
     ): String? {
-        println("asd")
-        //sets the fields to be the parameters, if the parameters are set. this is done since theese parameters are optional
+        //sets the fields to be the parameters, if the parameters are set. this is done since these parameters are optional
         timeFromParam?.let { timeFrom = it }
         timeToParam?.let { timeTo = it }
         directionParam?.let { direction = directionParam.uppercase() }
         lastUpdateParam?.let { lastUpdate = it }
-        serviceTypeParam?.let { serviceType = serviceTypeParam.uppercase() }
+        includeHelicopterParam?.let { includeHelicopter = includeHelicopterParam }
         codeshareParam?.let { codeshare = it }
 
         val url = urlBuilder(airportCodeParam)
@@ -73,7 +75,7 @@ class AvinorApiHandler(){
      * Works only on open(public) level api's
      * @param url the complete url which the api-call is based on
      */
-    public fun apiCall(url: String): String? {
+    fun apiCall(url: String): String? {
         val request = Request.Builder()
             .url(url)
             .build()
@@ -127,23 +129,16 @@ class AvinorApiHandler(){
         }
 
         //adds the optional "E" service type if the option is specified
-        if (serviceType != null && (serviceType == "E")) {
-            urlBuilderLink += "&serviceType=$serviceType"
-        } else if (serviceType != null) {
-            throw IllegalArgumentException("Servicetype not valid, input ignored")
+        if (includeHelicopter) {
+            urlBuilderLink += "&serviceType=E"
         } else {
             //do nothing, not obligatory parameter for api
         }
 
-        //formats last update parameter
-            //Accepted format: yyyy-MM-ddTHH:mm:ssZ
-        if (lastUpdate != null) {
-            //set format correctly - ISO-8601
-            val lastUpdateString = lastUpdate.toString()
-            urlBuilderLink += "&lastUpdate$lastUpdateString"
-        } else {
-            //do nothing, not obligatory parameter for api
-        }
+        //formats last update parameter. Accepted format: yyyy-MM-ddTHH:mm:ssZ
+        //set format correctly - ISO-8601
+        val lastUpdateString = lastUpdate.toString()
+        urlBuilderLink += "&lastUpdate$lastUpdateString"
 
         //formats direction-information if a valid direction is specified, else sets it to be nothing
         if (direction != null && (direction == "D" || direction == "A")) {
@@ -155,16 +150,12 @@ class AvinorApiHandler(){
         }
 
         //adds the optional codeshare information
-        if (codeshare != null) {
-            if (codeshare !!) {
-                urlBuilderLink += "&codeshare=Y"
-            } else{
-                //do nothing
-            }
+        if (codeshare) {
+            urlBuilderLink += "&codeshare=Y"
         } else {
             //do nothing, not obligatory parameter for api
         }
-
+        print(urlBuilderLink)
         return urlBuilderLink
     }
 
@@ -186,7 +177,7 @@ class AvinorApiHandler(){
         //a snippet of what's expected in the api-response
         val expectedInResponse = "code=\"${airportCodeParam.uppercase()}\""
 
-        //if there's a respose, the airportcode was found by the api, and the airportcodeparameter is 3 characters
+        //if there's a response, the airportcode was found by the api, and the airportcodeparameter is 3 characters
         if (response != null && airportCodeParam.length == 3 && expectedInResponse in response){
             return true
         } else {
@@ -196,10 +187,10 @@ class AvinorApiHandler(){
 
     /**
      * Takes an incoming instant datetime string, parses it, and then converts it into the correct utc for the user
-     * @param Datetime is a datetime of java.instant format with timezone information
-     * @return corrected datetime information, sets the utc to be the same as the user has. Returns errormessage if format is invalid
+     * @param datetime is a datetime of java.instant format with timezone information
+     * @return corrected datetime information, sets the utc to be the same as the user has. Returns error message if format is invalid
      */
-    public fun userCorrectDate(datetime: String): String{
+    fun userCorrectDate(datetime: String): String{
         try {
             //makes string into time object
             val datetimeOriginal = Instant.parse(datetime)

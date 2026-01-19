@@ -18,7 +18,7 @@ class AvinorApiHandlerTest {
             timeToParam = 7,
             directionParam = "D",
             lastUpdateParam = Instant.parse("2024-08-08T09:30:00Z"),
-            serviceTypeParam = "E"
+            includeHelicopterParam = true
         )
         requireNotNull(result) {"api call returned null"}
         assertTrue(result.contains("<airport"))
@@ -38,7 +38,7 @@ class AvinorApiHandlerTest {
                 timeToParam = 7,
                 directionParam = "D",
                 lastUpdateParam = Instant.parse("2024-08-08T09:30:00Z"),
-                serviceTypeParam = "E"
+                includeHelicopterParam = true
             )
         }
     }
@@ -55,7 +55,7 @@ class AvinorApiHandlerTest {
                 timeToParam = 7,
                 directionParam = "f",
                 lastUpdateParam = Instant.parse("2024-08-08T09:30:00Z"),
-                serviceTypeParam = "E"
+                includeHelicopterParam = true
             )
         }
     }
@@ -70,7 +70,7 @@ class AvinorApiHandlerTest {
                 timeToParam = 7,
                 directionParam = "D",
                 lastUpdateParam = Instant.parse("2024-08-08T09:30:00Z"),
-                serviceTypeParam = "E"
+                includeHelicopterParam = true
             )
         }
     }
@@ -85,22 +85,7 @@ class AvinorApiHandlerTest {
                 timeToParam = 700000000,
                 directionParam = "D",
                 lastUpdateParam = Instant.parse("2024-08-08T09:30:00Z"),
-                serviceTypeParam = "E"
-            )
-        }
-    }
-
-    @Test
-    fun `avinorXmlFeedApiCall with invalid service type throws exception`() {
-
-        assertThrows(IllegalArgumentException::class.java) {
-            val result = api.avinorXmlFeedApiCall(
-                airportCodeParam = "OS",
-                timeFromParam = 1,
-                timeToParam = 7,
-                directionParam = "D",
-                lastUpdateParam = Instant.parse("2024-08-08T09:30:00Z"),
-                serviceTypeParam = "aisdnaisdnaidn"
+                includeHelicopterParam = true
             )
         }
     }
