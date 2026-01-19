@@ -4,6 +4,11 @@ import model.avinorApi.Airport
 import kotlinx.coroutines.*
 import kotlin.system.measureTimeMillis
 import java.io.File
+import routes.api.AvinorApiHandler
+import handler.AvinorScheduleXmlHandler
+
+const val BATCH_SIZE = 5
+const val REQUEST_DELAY_MS = 50
 
 /**
  * Service class to handle fetching and processing airport data from the Avinor API.
@@ -29,7 +34,7 @@ class AirportService(
         println("Starting data fetch for ${airportCodes.size} airports...")
 
         val timeUsed = measureTimeMillis {
-            airportCodes.chunked(5).forEach { batch ->
+            airportCodes.chunked(BATCH_SIZE).forEach { batch ->
                 processBatch(batch)
             }
         }
@@ -45,7 +50,7 @@ class AirportService(
     private suspend fun processBatch(batch: List<String>) = coroutineScope {
         val deferredResults = batch.map { code ->
             async(Dispatchers.IO) {
-                delay(50)
+                delay(REQUEST_DELAY_MS.toLong())
                 println("Sending request for $code")
                 code to api.avinorXmlFeedApiCall(
                     airportCodeParam = code,
@@ -81,7 +86,13 @@ class AirportService(
         try {
             println("\n--------------------------------------------------")
             println("AIRPORT: ${airportData.name}")
-            println("%-10s %-10s %-15s %-10s %-20s".format("FLIGHT", "DIR", "DEST", "TIME", "STATUS"))
+            println("%-10s %-10s %-15s %-10s %-20s".format(
+                "FLIGHT",
+                "DIR",
+                "DEST",
+                "TIME",
+                "STATUS"
+            ))
             println("\n--------------------------------------------------")
 
             airportData.flightsContainer?.flight?.forEach { flight ->

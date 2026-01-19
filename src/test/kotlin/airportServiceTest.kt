@@ -4,6 +4,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
 import java.io.File
+import routes.api.AvinorApiHandler
 
 /**
  * Test class for AirportService.
@@ -11,7 +12,7 @@ import java.io.File
 class AirportServiceTest {
 
     /**
-     * A fake implementation of AvinorApiHandling for testing purposes.
+     * A fake implementation of AvinorApiHandler for testing purposes.
      */
     class FakeAvinorApi : AvinorApiHandler() {
 
