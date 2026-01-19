@@ -1,6 +1,7 @@
 package org.example
 
-import Endpoint
+import config.App
+import routes.api.Endpoint
 import handler.*
 import java.time.Instant
 import model.avinorApi.Airport
@@ -35,31 +36,16 @@ fun parseAndPrintFlights(airportData: Airport) {
 }
 
 fun main() {
-    val avinorApi = AvinorApiHandler()
-    val avxh = AvinorScheduleXmlHandler()
-    val endpoint = Endpoint()
-    val cache = AirlineNameHandler()
-    val siriMapper = SiriETMapper()
-    val siriPublisher = SiriETPublisher()
-    val clock = Clock.systemUTC()
+    val components = App()
 
     println("Please choose a airport")
     val chosenAirport = readln()
-
     val xmlData = avinorApi.avinorXmlFeedApiCall(chosenAirport, directionParam = "D", lastUpdateParam = Instant.now(clock), codeshareParam = true)
-    if (xmlData != null && "Error" !in xmlData) {
-        parseAndPrintFlights(avxh.unmarshallXmlToAirport(xmlData))
-    } else {
-        println("Failed to fetch XML data: ($xmlData)")
-    }
 
-    Thread.sleep(3000) // Wait for async response */
 
     val airportCode = chosenAirport
     val airport = avxh.unmarshallXmlToAirport(xmlData ?: "")
 
-    // Convert to SIRI-ET format
-    println("Converting to SIRI-ET format...")
     val siri = siriMapper.mapToSiri(airport, airportCode)
 
     // Generate XML output
@@ -71,17 +57,8 @@ fun main() {
     // Save to file
     val outputFile = File("siri-et-output.xml")
     siriPublisher.toFile(siri, outputFile, formatOutput = true)
-    println("SIRI-ET XML saved to: ${outputFile.absolutePath}")
-    println()
 
     // Validate XML against SIRI-ET XSD
     val result = XsdValidator().validateSirixml(siriXml, SiriValidator.Version.VERSION_2_1)
     println(result.message)
-
-    // Print sample of output
-    println("=== SIRI-ET XML Output (first 2000 chars) ===")
-    println(siriXml.take(2000))
-    if (siriXml.length > 2000) {
-        println("... (truncated, see ${outputFile.name} for full output)")
-    }
 }
