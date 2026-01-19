@@ -2,6 +2,7 @@ package org.example
 
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
+import routes.api.AvinorApiHandler
 import java.time.Instant
 
 class AvinorApiHandlerTest {

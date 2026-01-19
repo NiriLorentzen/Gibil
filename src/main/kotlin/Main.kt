@@ -9,12 +9,8 @@ fun main() {
     val components = App()
     val service = SiriEtService(components)
 
-    //Should be removed when calling all airports.
-    print("Please choose an airport: ")
-    val airportCode = readln()
-
     //Should be changed into calling all airports
-    val siriXml = service.fetchAndConvert(airportCode)
+    val siriXml = service.fetchAndConvert("OSL")
 
     val validationResult = service.validateXmlXsd(siriXml)
     println(validationResult.message)
