@@ -1,5 +1,6 @@
 package org.example
 
+import Endpoint
 import handler.*
 import java.time.Instant
 import model.avinorApi.Airport
@@ -35,6 +36,7 @@ fun parseAndPrintFlights(airportData: Airport) {
 
 fun main() {
     val AVXH = AvinorScheduleXmlHandler()
+    val endpoint = Endpoint()
 
     println("Please choose a airport")
     val chosenAirport = readln()
@@ -80,6 +82,7 @@ fun main() {
 
     // Generate XML output
     val siriXml = siriPublisher.toXml(siri)
+    endpoint.siriEtEndpoint(siriXml)
 
     // Save to file
     val outputFile = File("siri-et-output.xml")
