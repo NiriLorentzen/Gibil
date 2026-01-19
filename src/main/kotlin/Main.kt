@@ -1,6 +1,6 @@
 package org.example
 
-import AirlineNameHandler
+import handler.*
 import java.time.Instant
 import model.avinorApi.Airport
 import org.entur.siri.validator.SiriValidator
@@ -9,6 +9,7 @@ import siri.SiriETMapper
 import siri.SiriETPublisher
 import java.time.Clock
 import siri.validator.XsdValidator
+import routes.api.AvinorApiHandler
 
 //Temporary function to test JAXB objects fetched and made from Avinor api data
 fun parseAndPrintFlights(airportData: Airport) {
@@ -44,7 +45,7 @@ fun main() {
         airportCodeParam = chosenAirport,
         directionParam = "A",
         lastUpdateParam = specificTime,
-        serviceTypeParam = "E",
+        includeHelicopterParam = true,
         timeToParam = 336,
         timeFromParam = 24,
         codeshareParam = true
