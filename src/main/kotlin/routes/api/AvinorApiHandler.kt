@@ -155,7 +155,6 @@ class AvinorApiHandler{
         } else {
             //do nothing, not obligatory parameter for api
         }
-        print(urlBuilderLink)
         return urlBuilderLink
     }
 
