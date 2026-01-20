@@ -85,9 +85,6 @@ open class AvinorApiHandler{
             return if (response.isSuccessful) {
                 response.body?.string()  // Returns raw XML
             } else {
-                /*println("Error: ${response.code}")
-                null*/
-                println(url)
                 throw IllegalArgumentException("Error: ${response.code}")
             }
         }
