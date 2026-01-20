@@ -1,10 +1,13 @@
 package org.example
 
 import kotlinx.coroutines.runBlocking
+import model.avinorApi.Airport
+import handler.AvinorScheduleXmlHandler
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
 import java.io.File
 import routes.api.AvinorApiHandler
+import java.util.Collections
 
 /**
  * Test class for AirportService.
@@ -16,8 +19,8 @@ class AirportServiceTest {
      */
     class FakeAvinorApi : AvinorApiHandler() {
 
-        val requestedAirports: MutableList<String> =
-            java.util.Collections.synchronizedList(mutableListOf<String>())
+        // We can simulate an error by changing this variable in the test
+        var simulateError = false
 
         override fun avinorXmlFeedApiCall(
             airportCodeParam: String,
@@ -25,47 +28,74 @@ class AirportServiceTest {
             timeToParam: Int?,
             directionParam: String?,
             lastUpdateParam: java.time.Instant?,
-            serviceTypeParam: String?,
+            includeHelicopterParam: Boolean?,
             codeshareParam: Boolean?
         ): String? {
+            capturedRequests.add(airportCodeParam)
 
-            requestedAirports.add(airportCodeParam)
-            return """
-                  <airport name="$airportCodeParam">
-                    <flights lastUpdate="2026-01-15T10:00:00Z">
-                        <flight uniqueID="12345">
-                            <flight_id>SK123</flight_id>
-                            <schedule_time>2026-01-15T10:00:00Z</schedule_time>
-                            <arr_dep>D</arr_dep>
-                            <airport>TRD</airport>
-                            <status code="A" time="2026-01-15T10:05:00Z"/>
-                        </flight>
-                    </flights>
-                </airport>
-            """.trimIndent()
+            if (simulateError) {
+                return "Error: 500 Server Error"
+            }
+
+            // Returns valid XML that the parser should try to read
+            return "<valid_xml_for_$airportCodeParam>"
         }
     }
 
-    /**
-     * Test to verify that fetchAndProcessAirports processes airports without network errors.
-     */
+    // This checks if the Service actually sends the data to the parsing logic
+    class SpyXmlHandler : AvinorScheduleXmlHandler() {
+        val capturedXmlData = Collections.synchronizedList(mutableListOf<String>())
+
+        override fun unmarshallXmlToAirport(xmlData: String): Airport {
+            capturedXmlData.add(xmlData)
+
+            // Return a dummy object so the "print" function doesn't crash
+            val dummyAirport = Airport()
+            dummyAirport.name = "Test Airport"
+            return dummyAirport
+        }
+    }
+
     @Test
-    fun `fetchAndProcessAirports should call API for every code in the file`() = runBlocking {
+    fun `fetchAndProcessAirports should flow correctly from API to Parser`() = runBlocking {
         val tempFile = File.createTempFile("test_airports", ".txt")
-        tempFile.writeText("OSL\nBGO\nTRD")
+        tempFile.writeText("OSL")
         tempFile.deleteOnExit()
 
-        val fakeApi = FakeAvinorApi()
-        val service = AirportService(api = fakeApi)
+        val spyApi = SpyAvinorApi()
+        val spyParser = SpyXmlHandler()
+
+        val service = AirportService(api = spyApi, xmlHandler = spyParser)
 
         service.fetchAndProcessAirports(tempFile.absolutePath)
 
-        assertEquals(3, fakeApi.requestedAirports.size, "Should have requested exactly 3 airports")
+        // 1. Check that the API was called
+        assertTrue(spyApi.capturedRequests.contains("OSL"), "API should have been called for OSL")
 
-        assertTrue(fakeApi.requestedAirports.contains("OSL"), "Should have requested OSL")
-        assertTrue(fakeApi.requestedAirports.contains("BGO"), "Should have requested BGO")
-        assertTrue(fakeApi.requestedAirports.contains("TRD"), "Should have requested TRD")
+        // 2. Check that data from the API was passed to the Parser
+        // Our API returns "<valid_xml_for_OSL>", so we check that the parser received exactly this.
+        assertEquals(1, spyParser.capturedXmlData.size, "The parser should have received data 1 time")
+        assertEquals("<valid_xml_for_OSL>", spyParser.capturedXmlData[0], "The parser received incorrect data!")
+    }
 
-        assertFalse(fakeApi.requestedAirports.contains("SVG"), "Should NOT have requested SVG")
+    @Test
+    fun `fetchAndProcessAirports should NOT parse if API returns Error`() = runBlocking {
+        val tempFile = File.createTempFile("test_error", ".txt")
+        tempFile.writeText("BGO")
+        tempFile.deleteOnExit()
+
+        val spyApi = SpyAvinorApi()
+        spyApi.simulateError = true // We simulate that Avinor is down/returning errors
+
+        val spyParser = SpyXmlHandler()
+        val service = AirportService(api = spyApi, xmlHandler = spyParser)
+
+        service.fetchAndProcessAirports(tempFile.absolutePath)
+
+        // 1. API was called
+        assertTrue(spyApi.capturedRequests.contains("BGO"))
+
+        // 2. The parser should NOT have been called, because the API returned "Error"
+        assertEquals(0, spyParser.capturedXmlData.size, "The parser should not run when the API fails")
     }
 }

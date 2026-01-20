@@ -55,9 +55,7 @@ class AirportService(
                 code to api.avinorXmlFeedApiCall(
                     airportCodeParam = code,
                     timeFromParam = 2,
-                    timeToParam = 7,
-                    directionParam = null,
-                    lastUpdateParam = null
+                    timeToParam = 7
                 )
             }
         }
