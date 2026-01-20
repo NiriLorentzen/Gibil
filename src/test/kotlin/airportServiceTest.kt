@@ -14,10 +14,11 @@ import java.util.Collections
  */
 class AirportServiceTest {
 
-    /**
-     * A fake implementation of AvinorApiHandler for testing purposes.
-     */
-    class FakeAvinorApi : AvinorApiHandler() {
+     /**
+      * A fake implementation of AvinorApiHandler for testing purposes.
+      */
+     class SpyAvinorApi : AvinorApiHandler() {
+        val capturedRequests = Collections.synchronizedList(mutableListOf<String>())
 
         // We can simulate an error by changing this variable in the test
         var simulateError = false
