@@ -7,7 +7,6 @@ import org.springframework.boot.runApplication
 class Application
 
 fun main(args: Array<String>) {
+    //Output can be seen on localhost:8080/siri
     runApplication<Application>(*args)
-    println("")
-    println("Output can be seen on localhost:8080/siri")
 }
