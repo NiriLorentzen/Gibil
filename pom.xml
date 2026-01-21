@@ -59,25 +59,6 @@
                     <mainClass>org.example.MainKt</mainClass>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.owasp</groupId>
-                <artifactId>dependency-check-maven</artifactId>
-                <version>10.0.4</version>
-                <configuration>
-                    <format>all</format>
-                    <failBuildOnCVSS>7</failBuildOnCVSS>
-                    <suppressionFiles>
-                        <suppresionFile>${basedir}/owasp_suppressions.xml</suppresionFile>
-                    </suppressionFiles>
-                </configuration>
-                <executions>
-                    <execution>
-                        <!-- run only using explicit command -->
-                        <id>check</id>
-                        <phase>none</phase>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 
@@ -120,5 +101,4 @@
             <version>1.28</version>
         </dependency>
     </dependencies>
-
 </project>
