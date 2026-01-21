@@ -2,7 +2,10 @@ import config.App
 
 import java.time.Instant
 import org.entur.siri.validator.SiriValidator
+import org.springframework.stereotype.Service
 import siri.validator.ValidationResult
+
+private const val DEPATURE_CODE = "D"
 
 /**
  * SiriEtService is a service responsible for calling AvinorApi and
@@ -10,9 +13,8 @@ import siri.validator.ValidationResult
  * This siri data is validated before being sent to endpoint
  * @param components application components and dependencies
  */
+@Service
 class SiriEtService(private val components: App) {
-
-    private val DEPATURE_CODE = "D" //Should be const and moved
 
     /**
      * fetchAndConvert fetches XML data from the avinorScheduleApi,
