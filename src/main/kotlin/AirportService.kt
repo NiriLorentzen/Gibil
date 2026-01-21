@@ -5,8 +5,7 @@ import model.avinorApi.Airport
 import kotlinx.coroutines.*
 import kotlin.system.measureTimeMillis
 import java.io.File
-import routes.api.AvinorApiHandler
-import handler.AvinorScheduleXmlHandler
+import org.springframework.stereotype.Service
 
 const val BATCH_SIZE = 5
 const val REQUEST_DELAY_MS = 50
@@ -14,6 +13,7 @@ const val REQUEST_DELAY_MS = 50
 /**
  * Service class to handle fetching and processing airport data from the Avinor API.
  */
+@Service
 class AirportService(private val components: App) {
 
     /**
